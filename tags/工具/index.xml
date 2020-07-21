@@ -1,15 +1,15 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
-        <title>工具 - 标签 - Jacket</title>
-        <link>real-jacket.github.io/tags/%E5%B7%A5%E5%85%B7/</link>
-        <description>工具 - 标签 - Jacket</description>
+        <title>工具 - 标签 - Xiaomu</title>
+        <link>https://real-jacket.github.io/tags/%E5%B7%A5%E5%85%B7/</link>
+        <description>工具 - 标签 - Xiaomu</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor>
-            <webMaster>1762982273@qq.com (xiaomu)</webMaster><lastBuildDate>Tue, 18 Dec 2018 21:21:46 &#43;0000</lastBuildDate><atom:link href="real-jacket.github.io/tags/%E5%B7%A5%E5%85%B7/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>1762982273@qq.com (xiaomu)</webMaster><lastBuildDate>Tue, 18 Dec 2018 21:21:46 &#43;0000</lastBuildDate><atom:link href="https://real-jacket.github.io/tags/%E5%B7%A5%E5%85%B7/" rel="self" type="application/rss+xml" /><item>
     <title>vscode 快捷操作</title>
-    <link>real-jacket.github.io/posts/vscode-%E5%BF%AB%E6%8D%B7%E6%93%8D%E4%BD%9C/</link>
+    <link>https://real-jacket.github.io/posts/vscode-%E5%BF%AB%E6%8D%B7%E6%93%8D%E4%BD%9C/</link>
     <pubDate>Tue, 18 Dec 2018 21:21:46 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>real-jacket.github.io/posts/vscode-%E5%BF%AB%E6%8D%B7%E6%93%8D%E4%BD%9C/</guid>
+    <guid>https://real-jacket.github.io/posts/vscode-%E5%BF%AB%E6%8D%B7%E6%93%8D%E4%BD%9C/</guid>
     <description><![CDATA[命令行使用 vs code 命令查找：Ctrl + Shift + P/Cmd + Shift + P code + &lt;filename&gt;/&lt;filepath&gt; 打开文件或者文件目录 参数 作用 注意项 -r 在同一窗口打开 会删掉原有工作区，只保留一个 -g &lt; file:line[character] &gt;]]></description>
 </item></channel>
 </rss>

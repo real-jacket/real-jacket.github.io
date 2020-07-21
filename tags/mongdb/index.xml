@@ -1,15 +1,15 @@
 <rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
     <channel>
-        <title>mongdb - 标签 - Jacket</title>
-        <link>real-jacket.github.io/tags/mongdb/</link>
-        <description>mongdb - 标签 - Jacket</description>
+        <title>mongdb - 标签 - Xiaomu</title>
+        <link>https://real-jacket.github.io/tags/mongdb/</link>
+        <description>mongdb - 标签 - Xiaomu</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor>
-            <webMaster>1762982273@qq.com (xiaomu)</webMaster><lastBuildDate>Wed, 09 Jan 2019 11:55:02 &#43;0000</lastBuildDate><atom:link href="real-jacket.github.io/tags/mongdb/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>1762982273@qq.com (xiaomu)</webMaster><lastBuildDate>Wed, 09 Jan 2019 11:55:02 &#43;0000</lastBuildDate><atom:link href="https://real-jacket.github.io/tags/mongdb/" rel="self" type="application/rss+xml" /><item>
     <title>建一个本地mongdb数据库</title>
-    <link>real-jacket.github.io/posts/%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%9C%AC%E5%9C%B0mongdb%E6%95%B0%E6%8D%AE%E5%BA%93/</link>
+    <link>https://real-jacket.github.io/posts/%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%9C%AC%E5%9C%B0mongdb%E6%95%B0%E6%8D%AE%E5%BA%93/</link>
     <pubDate>Wed, 09 Jan 2019 11:55:02 &#43;0000</pubDate>
     <author>作者</author>
-    <guid>real-jacket.github.io/posts/%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%9C%AC%E5%9C%B0mongdb%E6%95%B0%E6%8D%AE%E5%BA%93/</guid>
+    <guid>https://real-jacket.github.io/posts/%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%9C%AC%E5%9C%B0mongdb%E6%95%B0%E6%8D%AE%E5%BA%93/</guid>
     <description><![CDATA[安装 mongodb 数据库 安装包安装 进入官网，点击左上角 Get MongoDB 下载，进入中间的 server 界面，会自动匹配出对应的系统，下载对应的安装包，安装即可。 如果想看更详细的安]]></description>
 </item></channel>
 </rss>
