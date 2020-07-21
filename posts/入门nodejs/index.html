@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>入门nodejs - Jacket</title><meta name="Description" content="关于 LoveIt 主题"><meta property="og:title" content="入门nodejs" />
+<meta property="og:description" content="网络与 IP HTTP 协议的底层是由 TCP 和 IP 协议（TCP/IP）构建的 什么是 TCP TCP 传输控制协议（Transmission Control Protocol）：按层次分，TC" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="real-jacket.github.io/posts/%E5%85%A5%E9%97%A8nodejs/" />
+<meta property="og:image" content="/logo.png"/>
+<meta property="article:published_time" content="2018-09-04T16:05:10+00:00" />
+<meta property="article:modified_time" content="2018-09-04T16:05:10+00:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/logo.png"/>
+
+<meta name="twitter:title" content="入门nodejs"/>
+<meta name="twitter:description" content="网络与 IP HTTP 协议的底层是由 TCP 和 IP 协议（TCP/IP）构建的 什么是 TCP TCP 传输控制协议（Transmission Control Protocol）：按层次分，TC"/>
+<meta name="application-name" content="Jacket">
+<meta name="apple-mobile-web-app-title" content="Jacket"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="real-jacket.github.io/posts/%E5%85%A5%E9%97%A8nodejs/" /><link rel="prev" href="real-jacket.github.io/posts/%E5%86%99%E4%B8%80%E4%B8%AA%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90/" /><link rel="next" href="real-jacket.github.io/posts/%E4%BB%80%E4%B9%88%E6%98%AF%E8%84%9A%E6%9C%AC/" /><link rel="stylesheet" href="/real-jacket.github.io/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/real-jacket.github.io/css/style.min.css"><link rel="stylesheet" href="/real-jacket.github.io/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/real-jacket.github.io/lib/animate/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "入门nodejs",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "real-jacket.github.io\/posts\/%E5%85%A5%E9%97%A8nodejs\/"
+        },"genre": "posts","keywords": "node","wordcount":  2684 ,
+        "url": "real-jacket.github.io\/posts\/%E5%85%A5%E9%97%A8nodejs\/","datePublished": "2018-09-04T16:05:10+00:00","dateModified": "2018-09-04T16:05:10+00:00","publisher": {
+            "@type": "Organization",
+            "name": "xxxx","logo": "\/images\/avatar.png"},"author": {
+                "@type": "Person",
+                "name": "xiaomu"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="real-jacket.github.io/" title="Jacket"><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw'></i></span>Jacket</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/real-jacket.github.io/posts/"> Posts </a><a class="menu-item" href="/real-jacket.github.io/tags/"> Tags </a><a class="menu-item" href="/real-jacket.github.io/categories/"> Categories </a><a class="menu-item" href="https://github.com/real-jacket" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="real-jacket.github.io/" title="Jacket"><span class="header-title-pre"><i class='far fa-kiss-wink-heart fa-fw'></i></span>Jacket</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/real-jacket.github.io/posts/" title="">Posts</a><a class="menu-item" href="/real-jacket.github.io/tags/" title="">Tags</a><a class="menu-item" href="/real-jacket.github.io/categories/" title="">Categories</a><a class="menu-item" href="https://github.com/real-jacket" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">入门nodejs</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="real-jacket.github.io/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>xiaomu</a></span>&nbsp;<span class="post-category">收录于 <a href="real-jacket.github.io/categories/node/"><i class="far fa-folder fa-fw"></i>node</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2018-09-04">2018-09-04</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2684 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;<span id="real-jacket.github.io/posts/%E5%85%A5%E9%97%A8nodejs/" class="leancloud_visitors" data-flag-title="入门nodejs">
+                        <i class="far fa-eye fa-fw"></i>&nbsp;<span class=leancloud-visitors-count></span>&nbsp;次阅读
+                    </span>&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#网络与-ip">网络与 IP</a>
+      <ul>
+        <li><a href="#什么是-tcp">什么是 TCP</a></li>
+        <li><a href="#ip-网络协议internet-protocol">IP 网络协议（Internet Protocol）</a></li>
+        <li><a href="#端口">端口</a></li>
+      </ul>
+    </li>
+    <li><a href="#写一个简易的-http-server">写一个简易的 HTTP Server</a>
+      <ul>
+        <li><a href="#创建一个后台服务">创建一个后台服务</a></li>
+        <li><a href="#监听端口">监听端口</a></li>
+        <li><a href="#请求方法访问地址以及请求头">请求方法、访问地址以及请求头</a></li>
+        <li><a href="#设置响应头">设置响应头</a></li>
+        <li><a href="#发送响应体">发送响应体</a></li>
+        <li><a href="#关于错误">关于错误</a></li>
+        <li><a href="#http-状态码">HTTP 状态码</a></li>
+        <li><a href="#代码示例">代码示例</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="网络与-ip">网络与 IP</h2>
+<p>HTTP 协议的底层是由 TCP 和 IP 协议（TCP/IP）构建的</p>
+<h3 id="什么是-tcp">什么是 TCP</h3>
+<p>TCP 传输控制协议（Transmission Control Protocol）：按层次分，TCP 位于传输层，提供可靠的字节流服务。
+换句话说，为了更容易的传输大数据，TCP 协议会把数据分割成以报文段为单位的数据包进行管理，并且 TCP 协议能够确认数据最终是否到达对方（一般指所谓的三次握手）。</p>
+<ol>
+<li>TCP 与 UDP 的区别：
+简答：TCP 可靠、面向连接、相对 UDP 较慢；UDP 不可靠，不面向连接、相对 TCP 较快。搞定。</li>
+<li>TCP 的三次握手：
+<ul>
+<li>简答：每次建立连接前，客户端和服务端之前都要先进行三次对话才开始正式传输内容，三次对话大概是这样的：
+<ol>
+<li>客户端：我要连接你了，可以吗</li>
+<li>服务端：嗯，我准备好了，连接我吧</li>
+<li>客户端：那我连接你咯。</li>
+<li>开始后面步骤</li>
+</ol>
+</li>
+<li>详细解答：握手过程中使用了 TCP 的标志（flag）——SYG（synchronize）和 ACG（acknowledge）
+<ol>
+<li>发送端：发送一个带 SYG 标志的数据包给对方</li>
+<li>接收端：收到后，回传一个带 SYG/ACK 标志的数据包以示传达确认信息</li>
+<li>发送端：收到后，再回传一个带 ACK 标志的数据包，代表握手结束。</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="ip-网络协议internet-protocol">IP 网络协议（Internet Protocol）</h3>
+<p>从层次上分，IP 网络协议位于网络层，其作用是把各种数据包传送给对方，为了确保数据传送到正确的对象，则需要满足一些条件，其中最重要的两个便是：IP 地址与 MAC 地址</p>
+<ul>
+<li>IP 地址指明了节点被分配到的地址</li>
+<li>MAC 地址是指的网卡所属的固定地址</li>
+</ul>
+<blockquote>
+<p>注意：
+IP 是一种网络协议，而 IP 地址是类似 127.0.0.1 的地址。
+IP 地址可以与 MAC 地址进行匹配。IP 地址可换，而 MAC 地址基本不会变。</p>
+</blockquote>
+<p>在互联网中，一般一个设备对应一个 IP 地址。通俗理解，IP 地址分为内网 IP 与外网 IP
+<img
+        class="lazyload"
+        src="/real-jacket.github.io/svg/loading.min.svg"
+        data-src="https://upload-images.jianshu.io/upload_images/12812641-4f2969ccc48bde69.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+        data-srcset="https://upload-images.jianshu.io/upload_images/12812641-4f2969ccc48bde69.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240, https://upload-images.jianshu.io/upload_images/12812641-4f2969ccc48bde69.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240 1.5x, https://upload-images.jianshu.io/upload_images/12812641-4f2969ccc48bde69.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240 2x"
+        data-sizes="auto"
+        alt="https://upload-images.jianshu.io/upload_images/12812641-4f2969ccc48bde69.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+        title="内网与外网" /></p>
+<ul>
+<li>电信服务商提供 DNS 服务，你从网页中输入的网址首先会去电信查找对应的 IP 地址。</li>
+<li>路由器有一个「内网 IP」与一个「外网 IP」。
+<ul>
+<li>内网中的设备可以互相访问（比如你可以用电脑或手机进入 http://192.168.1.1 来查看你的路由器），但是不能直接访问外网，内网设备想要访问外网，就必须经过路由器中转。</li>
+<li>外网中的设备可以互相访问（比如 qq.com 可以把首页发送给你的路由器，你的路由器有外网 IP），但是外网中的设备无法访问你的内网设备。</li>
+<li>外网的资源通过路由器的中转传达至内网的各个设备中，路由器在其中充当指路人的角色。</li>
+</ul>
+</li>
+<li>路由器没有固定的「外网 IP」，都是临时分配的，类似 14.17.32.21，每次路由器重启都会被重新分配一个 IP 地址。</li>
+<li>路由器与其 wifi 组成整个内网，在内网中的每个设备都有一个对应的「外网 IP」，类似 192.168.1.1，这个内网 IP 也不是固定的，一般设备断开 wifi 重连都会改变内网 IP 地址。</li>
+<li>两个特殊的 IP，本地 IP 127.0.0.1 代表设备自身，特别的 IP 0.0.0.0 不表示任何设备。</li>
+</ul>
+<h3 id="端口">端口</h3>
+<p>端口其实就是一个编号，并不是一种硬件。
+一个服务器（硬件）不一定只提供一种服务，比如一个服务器既提供 HTTP 服务，又提供 FTP 服务，还提供 SMTP 服务（邮件服务），那么只用一个 IP 是无法告诉服务器你想要使用哪种服务。</p>
+<p>所以这里有一个重要的原则：一个端口对应一个服务。</p>
+<ul>
+<li>HTTP 服务 80 端口</li>
+<li>HTTPS 服务 443 端口</li>
+<li>FTP 服务 21 端口</li>
+</ul>
+<p>每个机器一共有 65535（2 的 16 次方减一）个端口（协议规定）</p>
+<ol>
+<li>0 到 1023（2 的 10 次方减一）号端口留给系统使用。</li>
+<li>其他端口用户用</li>
+<li>如果端口被占用，需要停掉该端口的服务才能再次使用。</li>
+</ol>
+<h2 id="写一个简易的-http-server">写一个简易的 HTTP Server</h2>
+<h3 id="创建一个后台服务">创建一个后台服务</h3>
+<p>任何网络服务应用程序总是要先创建一个服务对象。这在 Node.js 中通常通过 createServer 方法。</p>
+<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">)</span>
+
+<span class="kd">var</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// magic happens here!
+</span><span class="c1"></span><span class="p">}</span><span class="p">)</span>
+</code></pre></div><p>每当有 HTTP 请求到达服务器时，<code>createServer</code> 中传入的函数就被自动执行。所以这个函数也被称为是请求处理函数。
+当一个 HTTP 到达服务端，node 调用 request 处理程序，并产生一些唾手可得的对象用以处理传输，这些对象就是 request 和 response。。</p>
+<h3 id="监听端口">监听端口</h3>
+<p>实际上，为了处理请求，listen 方法需要在 server 对象上被显式调用。在大多数情况下，你只要把端口号作为参数传入 listen 方法中，作为监听端口即可。</p>
+<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">port</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="c1">//命令的第三个参数
+</span><span class="c1"></span>
+<span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="nx">port</span><span class="p">)</span>
+</code></pre></div><h3 id="请求方法访问地址以及请求头">请求方法、访问地址以及请求头</h3>
+<p>当处理一个请求时，第一件事你需要做的是看一下这个方法和其访问地址，以此决定你到底采取何种合理的行为。Node 通过把这些行为属性附加到 request 对象上，使得我们处理起来相对而言可以轻松一些。</p>
+<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">method</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">method</span>
+<span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">url</span>
+</code></pre></div><p>这里的 <code>method</code> 总是一个普通的 HTTP 方法动作行为 (verb)，<code>path</code> 是指没有服务器协议和 端口号的完整访问地址。一个典型的访问地址通常意味着包括第三个斜杠以及后面的所有内容。
+请求头也不是很难得到，它们也在 request 对象里，称为 headers。</p>
+<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">headers</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">headers</span>
+<span class="kd">var</span> <span class="nx">userAgent</span> <span class="o">=</span> <span class="nx">headers</span><span class="p">[</span><span class="s1">&#39;user-agent&#39;</span><span class="p">]</span>
+</code></pre></div><blockquote>
+<p>所有的请求头全是小写字母，而不管实际上它们是怎么进行传输的。所以在无论任何 情况下，解析请求头就得到了简化。
+如果一些请求头出现重复，它们的值不是被覆盖，就是通过英文分号进行分割。</p>
+</blockquote>
+<h3 id="设置响应头">设置响应头</h3>
+<p>响应头通过一个 <code>setHeader</code> 的属性很方便的设置。</p>
+<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;application/json&#39;</span><span class="p">)</span>
+<span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;X-Powered-By&#39;</span><span class="p">,</span> <span class="s1">&#39;bacon&#39;</span><span class="p">)</span>
+</code></pre></div><p>设置响应头时，它们的名字是大小写敏感的。如果你重复设置响应头，最后一次设置的值也就是系统得到的值。</p>
+<h3 id="发送响应体">发送响应体</h3>
+<p>既然 <code>response</code> 对象是一个 <code>WritableStre</code>，向客户端写入返回体只是一个普通的流方法的问题。</p>
+<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span>
+	<span class="s1">&#39;&lt;!DOCTYPE&gt;\n&lt;html&gt;&#39;</span> <span class="o">+</span>
+		<span class="s1">&#39;&lt;head&gt;&lt;link rel=&#34;stylesheet&#34; href=&#34;/style.js&#34;&gt;&#39;</span> <span class="o">+</span>
+		<span class="s1">&#39;&lt;/head&gt;&lt;body&gt;&#39;</span> <span class="o">+</span>
+		<span class="s1">&#39;&lt;h1&gt;你好&lt;/h1&gt;&#39;</span> <span class="o">+</span>
+		<span class="s1">&#39;&lt;script src=&#34;/script.html&#34;&gt;&lt;/script&gt;&#39;</span> <span class="o">+</span>
+		<span class="s1">&#39;&lt;/body&gt;&lt;/html&gt;&#39;</span>
+<span class="p">)</span>
+<span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="p">)</span>
+</code></pre></div><p>也可以将响应体放在<code>end</code>方法中。</p>
+<h3 id="关于错误">关于错误</h3>
+<p>请求与响应若是发生错误，则会自动触发自身的<code>error</code>事件。如果你不去处理监听这个事件，此错误将被抛出，这导致你的程序崩溃。 你应该无论如何都要添加 &lsquo;error&rsquo; 事件去监听你的请求对象，哪怕你只是做一个日志或者用你自己的独有方式去处理。</p>
+<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">request</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// This prints the error message and stack trace to `stderr`.
+</span><span class="c1"></span>	<span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span><span class="p">)</span>
+
+<span class="nx">response</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// This prints the error message and stack trace to `stderr`.
+</span><span class="c1"></span>	<span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+<span class="p">}</span><span class="p">)</span>
+</code></pre></div><h3 id="http-状态码">HTTP 状态码</h3>
+<p>如果你嫌麻烦不想设置它，返回客户端的默认状态码总是 200。当然，不是每个 HTTP 返回码必须都是 200，在某些情况下你一定希望返回一个不同的状态码，所以你应该设置 statusCode 属性。</p>
+<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">=</span> <span class="mi">404</span>
+</code></pre></div><h3 id="代码示例">代码示例</h3>
+<div class="highlight"><pre class="chroma"><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">port</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">port</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;请指定端口号好不啦？\nnode server.js 8888 这样不会吗？&#39;</span><span class="p">)</span>
+	<span class="nx">process</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">parsedUrl</span> <span class="o">=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+	<span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">url</span>
+	<span class="kd">var</span> <span class="nx">query</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;?&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">query</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="p">)</span>
+	<span class="p">}</span>
+	<span class="kd">var</span> <span class="nx">pathNoQuery</span> <span class="o">=</span> <span class="nx">parsedUrl</span><span class="p">.</span><span class="nx">pathname</span>
+	<span class="kd">var</span> <span class="nx">queryObject</span> <span class="o">=</span> <span class="nx">parsedUrl</span><span class="p">.</span><span class="nx">query</span>
+	<span class="kd">var</span> <span class="nx">method</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">method</span>
+
+	<span class="cm">/******** 从这里开始看，上面不要看 ************/</span>
+
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;HTTP 路径为\n&#39;</span> <span class="o">+</span> <span class="nx">path</span><span class="p">)</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">path</span> <span class="o">==</span> <span class="s1">&#39;/style.js&#39;</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/css; charset=utf-8&#39;</span><span class="p">)</span>
+		<span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">&#39;body{background-color: #ddd;}h1{color: red;}&#39;</span><span class="p">)</span>
+		<span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">path</span> <span class="o">==</span> <span class="s1">&#39;/script.html&#39;</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/javascript; charset=utf-8&#39;</span><span class="p">)</span>
+		<span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="s1">&#39;alert(&#34;这是JS执行的&#34;)&#39;</span><span class="p">)</span>
+		<span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">path</span> <span class="o">==</span> <span class="s1">&#39;/index.css&#39;</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">response</span><span class="p">.</span><span class="nx">setHeader</span><span class="p">(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s1">&#39;text/html; charset=utf-8&#39;</span><span class="p">)</span>
+		<span class="nx">response</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span>
+			<span class="s1">&#39;&lt;!DOCTYPE&gt;\n&lt;html&gt;&#39;</span> <span class="o">+</span>
+				<span class="s1">&#39;&lt;head&gt;&lt;link rel=&#34;stylesheet&#34; href=&#34;/style.js&#34;&gt;&#39;</span> <span class="o">+</span>
+				<span class="s1">&#39;&lt;/head&gt;&lt;body&gt;&#39;</span> <span class="o">+</span>
+				<span class="s1">&#39;&lt;h1&gt;你好&lt;/h1&gt;&#39;</span> <span class="o">+</span>
+				<span class="s1">&#39;&lt;script src=&#34;/script.html&#34;&gt;&lt;/script&gt;&#39;</span> <span class="o">+</span>
+				<span class="s1">&#39;&lt;/body&gt;&lt;/html&gt;&#39;</span>
+		<span class="p">)</span>
+		<span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="p">)</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">=</span> <span class="mi">404</span>
+		<span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="p">)</span>
+	<span class="p">}</span>
+
+	<span class="cm">/******** 代码结束，下面不要看 ************/</span>
+<span class="p">}</span><span class="p">)</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="nx">port</span><span class="p">)</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;监听 &#39;</span> <span class="o">+</span> <span class="nx">port</span> <span class="o">+</span> <span class="s1">&#39; 成功\n请用在空中转体720度然后用电饭煲打开 http://localhost:&#39;</span> <span class="o">+</span> <span class="nx">port</span><span class="p">)</span>
+</code></pre></div><p>以上内容参考<a href="https://nodejs.org/zh-cn/docs/guides/anatomy-of-an-http-transaction/#" target="_blank" rel="noopener noreffer">node 官网</a>,感兴趣的可以去看看。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2018-09-04</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="real-jacket.github.io/posts/%E5%85%A5%E9%97%A8nodejs/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="real-jacket.github.io/posts/%E5%85%A5%E9%97%A8nodejs/" data-title="入门nodejs" data-hashtags="node"><i class="fab fa-twitter fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="real-jacket.github.io/posts/%E5%85%A5%E9%97%A8nodejs/" data-hashtag="node"><i class="fab fa-facebook-square fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="real-jacket.github.io/posts/%E5%85%A5%E9%97%A8nodejs/" data-title="入门nodejs"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="real-jacket.github.io/posts/%E5%85%A5%E9%97%A8nodejs/" data-title="入门nodejs"><i data-svg-src="/real-jacket.github.io/lib/simple-icons/icons/line.min.svg"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="real-jacket.github.io/posts/%E5%85%A5%E9%97%A8nodejs/" data-title="入门nodejs"><i class="fab fa-weibo fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="real-jacket.github.io/tags/node/">node</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="real-jacket.github.io/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="real-jacket.github.io/posts/%E5%86%99%E4%B8%80%E4%B8%AA%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90/" class="prev" rel="prev" title="写一个网易云音乐"><i class="fas fa-angle-left fa-fw"></i>写一个网易云音乐</a>
+            <a href="real-jacket.github.io/posts/%E4%BB%80%E4%B9%88%E6%98%AF%E8%84%9A%E6%9C%AC/" class="next" rel="next" title="初识脚本">初识脚本<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+<div id="comments"><div id="valine" class="comment"></div><noscript>
+                Please enable JavaScript to view the comments powered by <a href="https://valine.js.org/">Valine</a>.
+            </noscript></div></article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.63.2">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2018 - 2020</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="real-jacket.github.io/" target="_blank">xiaomu</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><link rel="stylesheet" href="/real-jacket.github.io/lib/valine/valine.min.css"><script type="text/javascript" src="/real-jacket.github.io/lib/valine/Valine.min.js"></script><script type="text/javascript" src="/real-jacket.github.io/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/real-jacket.github.io/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/real-jacket.github.io/lib/algoliasearch/algoliasearch-lite.umd.min.js"></script><script type="text/javascript" src="/real-jacket.github.io/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/real-jacket.github.io/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/real-jacket.github.io/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{"valine":{"appId":"0fLTkgl0M514VnXpkynjegh3-gzGzoHsz","appKey":"qdwSLKizmMJg6aGyHLf59KhH","avatar":"mp","el":"#valine","emojiCDN":"https://cdn.jsdelivr.net/npm/emoji-datasource-google@5.0.1/img/google/64/","emojiMaps":{"100":"1f4af.png","alien":"1f47d.png","anger":"1f4a2.png","angry":"1f620.png","anguished":"1f627.png","astonished":"1f632.png","black_heart":"1f5a4.png","blue_heart":"1f499.png","blush":"1f60a.png","bomb":"1f4a3.png","boom":"1f4a5.png","broken_heart":"1f494.png","brown_heart":"1f90e.png","clown_face":"1f921.png","cold_face":"1f976.png","cold_sweat":"1f630.png","confounded":"1f616.png","confused":"1f615.png","cry":"1f622.png","crying_cat_face":"1f63f.png","cupid":"1f498.png","dash":"1f4a8.png","disappointed":"1f61e.png","disappointed_relieved":"1f625.png","dizzy":"1f4ab.png","dizzy_face":"1f635.png","drooling_face":"1f924.png","exploding_head":"1f92f.png","expressionless":"1f611.png","face_vomiting":"1f92e.png","face_with_cowboy_hat":"1f920.png","face_with_hand_over_mouth":"1f92d.png","face_with_head_bandage":"1f915.png","face_with_monocle":"1f9d0.png","face_with_raised_eyebrow":"1f928.png","face_with_rolling_eyes":"1f644.png","face_with_symbols_on_mouth":"1f92c.png","face_with_thermometer":"1f912.png","fearful":"1f628.png","flushed":"1f633.png","frowning":"1f626.png","ghost":"1f47b.png","gift_heart":"1f49d.png","green_heart":"1f49a.png","grimacing":"1f62c.png","grin":"1f601.png","grinning":"1f600.png","hankey":"1f4a9.png","hear_no_evil":"1f649.png","heart":"2764-fe0f.png","heart_decoration":"1f49f.png","heart_eyes":"1f60d.png","heart_eyes_cat":"1f63b.png","heartbeat":"1f493.png","heartpulse":"1f497.png","heavy_heart_exclamation_mark_ornament":"2763-fe0f.png","hole":"1f573-fe0f.png","hot_face":"1f975.png","hugging_face":"1f917.png","hushed":"1f62f.png","imp":"1f47f.png","innocent":"1f607.png","japanese_goblin":"1f47a.png","japanese_ogre":"1f479.png","joy":"1f602.png","joy_cat":"1f639.png","kiss":"1f48b.png","kissing":"1f617.png","kissing_cat":"1f63d.png","kissing_closed_eyes":"1f61a.png","kissing_heart":"1f618.png","kissing_smiling_eyes":"1f619.png","laughing":"1f606.png","left_speech_bubble":"1f5e8-fe0f.png","love_letter":"1f48c.png","lying_face":"1f925.png","mask":"1f637.png","money_mouth_face":"1f911.png","nauseated_face":"1f922.png","nerd_face":"1f913.png","neutral_face":"1f610.png","no_mouth":"1f636.png","open_mouth":"1f62e.png","orange_heart":"1f9e1.png","partying_face":"1f973.png","pensive":"1f614.png","persevere":"1f623.png","pleading_face":"1f97a.png","pouting_cat":"1f63e.png","purple_heart":"1f49c.png","rage":"1f621.png","relaxed":"263a-fe0f.png","relieved":"1f60c.png","revolving_hearts":"1f49e.png","right_anger_bubble":"1f5ef-fe0f.png","robot_face":"1f916.png","rolling_on_the_floor_laughing":"1f923.png","scream":"1f631.png","scream_cat":"1f640.png","see_no_evil":"1f648.png","shushing_face":"1f92b.png","skull":"1f480.png","skull_and_crossbones":"2620-fe0f.png","sleeping":"1f634.png","sleepy":"1f62a.png","slightly_frowning_face":"1f641.png","slightly_smiling_face":"1f642.png","smile":"1f604.png","smile_cat":"1f638.png","smiley":"1f603.png","smiley_cat":"1f63a.png","smiling_face_with_3_hearts":"1f970.png","smiling_imp":"1f608.png","smirk":"1f60f.png","smirk_cat":"1f63c.png","sneezing_face":"1f927.png","sob":"1f62d.png","space_invader":"1f47e.png","sparkling_heart":"1f496.png","speak_no_evil":"1f64a.png","speech_balloon":"1f4ac.png","star-struck":"1f929.png","stuck_out_tongue":"1f61b.png","stuck_out_tongue_closed_eyes":"1f61d.png","stuck_out_tongue_winking_eye":"1f61c.png","sunglasses":"1f60e.png","sweat":"1f613.png","sweat_drops":"1f4a6.png","sweat_smile":"1f605.png","thinking_face":"1f914.png","thought_balloon":"1f4ad.png","tired_face":"1f62b.png","triumph":"1f624.png","two_hearts":"1f495.png","unamused":"1f612.png","upside_down_face":"1f643.png","weary":"1f629.png","white_frowning_face":"2639-fe0f.png","white_heart":"1f90d.png","wink":"1f609.png","woozy_face":"1f974.png","worried":"1f61f.png","yawning_face":"1f971.png","yellow_heart":"1f49b.png","yum":"1f60b.png","zany_face":"1f92a.png","zipper_mouth_face":"1f910.png","zzz":"1f4a4.png"},"enableQQ":false,"highlight":true,"lang":"zh-cn","pageSize":10,"placeholder":"你想说什么，show your code ！","recordIP":true,"serverURLs":"https://0fltkgl0.lc-cn-n1-shared.com","visitor":true}},"search":{"algoliaAppID":"HM4VPLQSYP","algoliaIndex":"hugo-blog","algoliaSearchKey":"04fcea8f7b5235736abe4b7e3f18a2c7","highlightTag":"em","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"algolia"}};</script><script type="text/javascript" src="/real-jacket.github.io/js/theme.min.js"></script></body>
+</html>

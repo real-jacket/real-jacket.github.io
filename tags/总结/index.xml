@@ -1,0 +1,50 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>总结 - 标签 - Jacket</title>
+        <link>real-jacket.github.io/tags/%E6%80%BB%E7%BB%93/</link>
+        <description>总结 - 标签 - Jacket</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor>
+            <webMaster>1762982273@qq.com (xiaomu)</webMaster><lastBuildDate>Tue, 01 Jan 2019 22:02:08 &#43;0000</lastBuildDate><atom:link href="real-jacket.github.io/tags/%E6%80%BB%E7%BB%93/" rel="self" type="application/rss+xml" /><item>
+    <title>2018年终总结</title>
+    <link>real-jacket.github.io/posts/2018%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/</link>
+    <pubDate>Tue, 01 Jan 2019 22:02:08 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>real-jacket.github.io/posts/2018%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/</guid>
+    <description><![CDATA[不知不觉中 2018 年已经走向尾声，2019 年悄然来临。这一年对我个人而言是崎岖坎坷的一年，我的人生最大的转折点或许就在这一年了。其中发生了太多太多]]></description>
+</item><item>
+    <title>半年计划</title>
+    <link>real-jacket.github.io/posts/futrue-plan/</link>
+    <pubDate>Sun, 25 Nov 2018 13:22:54 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>real-jacket.github.io/posts/futrue-plan/</guid>
+    <description><![CDATA[入职新公司大概有一周左右了，也逐渐适应了新公司的工作与周围的环境。在工作之余也该好好计划下自己的学习与技术增长了。给自己定个半年的目标，主要]]></description>
+</item><item>
+    <title>知识点整理</title>
+    <link>real-jacket.github.io/posts/%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/</link>
+    <pubDate>Sun, 16 Sep 2018 10:20:33 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>real-jacket.github.io/posts/%E7%9F%A5%E8%AF%86%E7%82%B9%E6%95%B4%E7%90%86/</guid>
+    <description><![CDATA[套路 举例 将不会的变成会的 侃侃而谈 HTML 面试 （必考）你是如何理解 HTML 语义化的？ 举例：段落用 p,边栏用 aside，主要内容用 main 标签 最开始是 PHP 后端写 HT]]></description>
+</item><item>
+    <title>写一个网易云音乐</title>
+    <link>real-jacket.github.io/posts/%E5%86%99%E4%B8%80%E4%B8%AA%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90/</link>
+    <pubDate>Sat, 01 Sep 2018 12:25:34 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>real-jacket.github.io/posts/%E5%86%99%E4%B8%80%E4%B8%AA%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90/</guid>
+    <description><![CDATA[背景介绍 根据网易云音乐移动端网页(music.163.com/m/)制作一个网易云音乐。 需求分析 分析该网页的需求： 用例图（use case） 线]]></description>
+</item><item>
+    <title>pikachu总结</title>
+    <link>real-jacket.github.io/posts/pikachu%E6%80%BB%E7%BB%93/</link>
+    <pubDate>Sun, 26 Aug 2018 10:05:57 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>real-jacket.github.io/posts/pikachu%E6%80%BB%E7%BB%93/</guid>
+    <description><![CDATA[简介 利用纯 css 画一个皮卡丘，再用 js 使它动起来，js 部分可以参考会动的简历。 主要知识点： 利用定位居中： .nose { width: 0; position: absolute; left: 50%; margin-left: -12px; // transform: translateX(-50%); } 画 pikachu 的嘴唇 只设]]></description>
+</item><item>
+    <title>会动的简历总结</title>
+    <link>real-jacket.github.io/posts/%E4%BC%9A%E5%8A%A8%E7%9A%84%E7%AE%80%E5%8E%86%E6%80%BB%E7%BB%93/</link>
+    <pubDate>Sat, 25 Aug 2018 10:53:36 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>real-jacket.github.io/posts/%E4%BC%9A%E5%8A%A8%E7%9A%84%E7%AE%80%E5%8E%86%E6%80%BB%E7%BB%93/</guid>
+    <description><![CDATA[简介 该简历是利用基础知识制作，主要涉及的知识点： pre标签的使用 per标签会在页面中呈现你写的内容，包括空格与换行。 pre内的标签会被当成h]]></description>
+</item></channel>
+</rss>

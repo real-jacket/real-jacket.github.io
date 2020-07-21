@@ -1,0 +1,22 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>博客 - 标签 - Jacket</title>
+        <link>real-jacket.github.io/tags/%E5%8D%9A%E5%AE%A2/</link>
+        <description>博客 - 标签 - Jacket</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor>
+            <webMaster>1762982273@qq.com (xiaomu)</webMaster><lastBuildDate>Wed, 02 Jan 2019 10:11:24 &#43;0000</lastBuildDate><atom:link href="real-jacket.github.io/tags/%E5%8D%9A%E5%AE%A2/" rel="self" type="application/rss+xml" /><item>
+    <title>hexo 博客转移</title>
+    <link>real-jacket.github.io/posts/hexo-%E5%8D%9A%E5%AE%A2%E8%BD%AC%E7%A7%BB/</link>
+    <pubDate>Wed, 02 Jan 2019 10:11:24 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>real-jacket.github.io/posts/hexo-%E5%8D%9A%E5%AE%A2%E8%BD%AC%E7%A7%BB/</guid>
+    <description><![CDATA[最近觉得 window 下的命令行实在难看，即使是 gitbash 也无法拯救，毕竟一些乱码着实是要逼死我这种强迫症。于是下定决心，将笔记本里的另一个 linux 系统 deepin 作为主力系统]]></description>
+</item><item>
+    <title>聊聊前端自学那些事吧</title>
+    <link>real-jacket.github.io/posts/%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2/</link>
+    <pubDate>Tue, 26 Jun 2018 15:58:17 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>real-jacket.github.io/posts/%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2/</guid>
+    <description><![CDATA[三个月前，我还是一个在工地搬砖的土木男。虽然在部门顶着个技术员的称号，实际上干的跟技术毫无关系的事，我曾经以为的技术工作不是这样的。于是在广]]></description>
+</item></channel>
+</rss>

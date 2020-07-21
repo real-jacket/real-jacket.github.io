@@ -1,0 +1,22 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>deepin - 标签 - Jacket</title>
+        <link>real-jacket.github.io/tags/deepin/</link>
+        <description>deepin - 标签 - Jacket</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor>
+            <webMaster>1762982273@qq.com (xiaomu)</webMaster><lastBuildDate>Tue, 21 Aug 2018 10:16:57 &#43;0000</lastBuildDate><atom:link href="real-jacket.github.io/tags/deepin/" rel="self" type="application/rss+xml" /><item>
+    <title>如何在deepin上使用SSR</title>
+    <link>real-jacket.github.io/posts/%E5%A6%82%E4%BD%95%E5%9C%A8deepin%E4%B8%8A%E4%BD%BF%E7%94%A8ssr/</link>
+    <pubDate>Tue, 21 Aug 2018 10:16:57 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>real-jacket.github.io/posts/%E5%A6%82%E4%BD%95%E5%9C%A8deepin%E4%B8%8A%E4%BD%BF%E7%94%A8ssr/</guid>
+    <description><![CDATA[背景 前段时间由于某些原因，我从使用 ss 转到 ssr，之前使用的 windows 系统有好用的 ssr 客户端，但后来为了更好的学习前端转到 deepin 深度系统。 由于是 ubantu 类系统，刚]]></description>
+</item><item>
+    <title>在deepin中安装node与npm</title>
+    <link>real-jacket.github.io/posts/%E5%9C%A8deepin%E4%B8%AD%E5%AE%89%E8%A3%85node%E4%B8%8Enpm/</link>
+    <pubDate>Thu, 16 Aug 2018 11:28:26 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>real-jacket.github.io/posts/%E5%9C%A8deepin%E4%B8%AD%E5%AE%89%E8%A3%85node%E4%B8%8Enpm/</guid>
+    <description><![CDATA[最近装了 deepin15.6，想安装 http-server 服务，结果报错，原来是 npm 版本太老，以下罗列几种 node 安装方式，这几种方式适用 Linux/ubantu/deepin 系统。 1、官方途径：通过包管]]></description>
+</item></channel>
+</rss>

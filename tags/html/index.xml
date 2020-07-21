@@ -1,0 +1,15 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>HTML - 标签 - Jacket</title>
+        <link>real-jacket.github.io/tags/html/</link>
+        <description>HTML - 标签 - Jacket</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor>
+            <webMaster>1762982273@qq.com (xiaomu)</webMaster><lastBuildDate>Thu, 05 Jul 2018 17:39:41 &#43;0000</lastBuildDate><atom:link href="real-jacket.github.io/tags/html/" rel="self" type="application/rss+xml" /><item>
+    <title>浅谈HTNL常用标签</title>
+    <link>real-jacket.github.io/posts/%E6%B5%85%E8%B0%88htnl%E5%B8%B8%E7%94%A8%E6%A0%87%E7%AD%BE/</link>
+    <pubDate>Thu, 05 Jul 2018 17:39:41 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>real-jacket.github.io/posts/%E6%B5%85%E8%B0%88htnl%E5%B8%B8%E7%94%A8%E6%A0%87%E7%AD%BE/</guid>
+    <description><![CDATA[HTML 常用标签 HTML 常用标签有：a、form、input、button、h1、p、ul、ol、small、strong、div、span、kbd、v]]></description>
+</item></channel>
+</rss>
