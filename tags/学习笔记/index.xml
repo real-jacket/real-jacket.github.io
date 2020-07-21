@@ -1,15 +1,1 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>学习笔记 - 标签 - Xiaomu</title>
-        <link>https://real-jacket.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
-        <description>学习笔记 - 标签 - Xiaomu</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor>
-            <webMaster>1762982273@qq.com (xiaomu)</webMaster><lastBuildDate>Thu, 23 Aug 2018 11:26:01 &#43;0000</lastBuildDate><atom:link href="https://real-jacket.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="self" type="application/rss+xml" /><item>
-    <title>浅析面向对象</title>
-    <link>https://real-jacket.github.io/posts/%E6%B5%85%E6%9E%90%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/</link>
-    <pubDate>Thu, 23 Aug 2018 11:26:01 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://real-jacket.github.io/posts/%E6%B5%85%E6%9E%90%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/</guid>
-    <description><![CDATA[一直以来关于什么是面向对象这个问题，没有标准答案，每个人都有自己对面向对象的理解，故写下博客记录自己学习时对面向对象的理解。]]></description>
-</item></channel>
-</rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>学习笔记 - 标签 - Xiaomu</title><link>https://real-jacket.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link><description>学习笔记 - 标签 - Xiaomu</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor><webMaster>1762982273@qq.com (xiaomu)</webMaster><lastBuildDate>Thu, 23 Aug 2018 11:26:01 +0000</lastBuildDate><atom:link href="https://real-jacket.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="self" type="application/rss+xml"/><item><title>浅析面向对象</title><link>https://real-jacket.github.io/posts/%E6%B5%85%E6%9E%90%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/</link><pubDate>Thu, 23 Aug 2018 11:26:01 +0000</pubDate><author>作者</author><guid>https://real-jacket.github.io/posts/%E6%B5%85%E6%9E%90%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/</guid><description>一直以来关于什么是面向对象这个问题，没有标准答案，每个人都有自己对面向对象的理解，故写下博客记录自己学习时对面向对象的理解。</description></item></channel></rss>

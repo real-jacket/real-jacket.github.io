@@ -1,15 +1,1 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>网络 - 分类 - Xiaomu</title>
-        <link>https://real-jacket.github.io/categories/%E7%BD%91%E7%BB%9C/</link>
-        <description>网络 - 分类 - Xiaomu</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor>
-            <webMaster>1762982273@qq.com (xiaomu)</webMaster><lastBuildDate>Mon, 20 Aug 2018 09:35:58 &#43;0000</lastBuildDate><atom:link href="https://real-jacket.github.io/categories/%E7%BD%91%E7%BB%9C/" rel="self" type="application/rss+xml" /><item>
-    <title>HTTP入门</title>
-    <link>https://real-jacket.github.io/posts/http%E5%85%A5%E9%97%A8/</link>
-    <pubDate>Mon, 20 Aug 2018 09:35:58 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>https://real-jacket.github.io/posts/http%E5%85%A5%E9%97%A8/</guid>
-    <description><![CDATA[基本概念 三个基本概念 URI：统一资源资源标志符(Uniform Resource Identifier) HTTP：超文本传输协议(HyperText Transfer Protocal) HTML：超文本标记语言(]]></description>
-</item></channel>
-</rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>网络 - 分类 - Xiaomu</title><link>https://real-jacket.github.io/categories/%E7%BD%91%E7%BB%9C/</link><description>网络 - 分类 - Xiaomu</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor><webMaster>1762982273@qq.com (xiaomu)</webMaster><lastBuildDate>Mon, 20 Aug 2018 09:35:58 +0000</lastBuildDate><atom:link href="https://real-jacket.github.io/categories/%E7%BD%91%E7%BB%9C/" rel="self" type="application/rss+xml"/><item><title>HTTP入门</title><link>https://real-jacket.github.io/posts/http%E5%85%A5%E9%97%A8/</link><pubDate>Mon, 20 Aug 2018 09:35:58 +0000</pubDate><author>作者</author><guid>https://real-jacket.github.io/posts/http%E5%85%A5%E9%97%A8/</guid><description>基本概念 三个基本概念 URI：统一资源资源标志符(Uniform Resource Identifier) HTTP：超文本传输协议(HyperText Transfer Protocal) HTML：超文本标记语言(</description></item></channel></rss>
