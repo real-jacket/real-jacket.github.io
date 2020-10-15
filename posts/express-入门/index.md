@@ -32,7 +32,7 @@ app.get('/', (req, res) => res.send('Hello World!'))
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
 ```
 
-然后在在浏览器中打开http://localhost:3000/，就可以看到网页了，就这么简单。
+然后在在浏览器中打开 http://localhost:3000/，就可以看到网页了，就这么简单。
 
 ## Express application generator
 
