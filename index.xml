@@ -1,4 +1,4 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Xiaomu</title><link>https://real-jacket.github.io/</link><description>xiaomu 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor><webMaster>1762982273@qq.com (xiaomu)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 13 May 2022 21:20:38 +0800</lastBuildDate><atom:link href="https://real-jacket.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Event Loop事件循环，GET！</title><link>https://real-jacket.github.io/posts/event-loop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AFget/</link><pubDate>Mon, 29 Oct 2018 21:14:06 +0000</pubDate><author>xiaomu</author><guid>https://real-jacket.github.io/posts/event-loop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AFget/</guid><description><![CDATA[<p>JS 中比较让人头疼的问题之一要算异步事件了，比如我们经常要等后台返回数据后进行 dom 操作，又比如我们要设置一个定时器完成特定的要求。在这些同步与异步事件里，异步事件肯定是在同步事件之后的，但是异步事件之间又是怎么样的一个顺序呢，比如多个 setTimeout 事件又是怎么样一个执行顺序？这就涉及到事件循环：Event Loop。</p>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Xiaomu</title><link>https://real-jacket.github.io/</link><description>xiaomu 的个人博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor><webMaster>1762982273@qq.com (xiaomu)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Fri, 13 May 2022 21:20:38 +0800</lastBuildDate><atom:link href="https://real-jacket.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Event Loop事件循环，GET！</title><link>https://real-jacket.github.io/posts/event-loop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AFget/</link><pubDate>Mon, 29 Oct 2018 21:14:06 +0800</pubDate><author>xiaomu</author><guid>https://real-jacket.github.io/posts/event-loop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AFget/</guid><description><![CDATA[<p>JS 中比较让人头疼的问题之一要算异步事件了，比如我们经常要等后台返回数据后进行 dom 操作，又比如我们要设置一个定时器完成特定的要求。在这些同步与异步事件里，异步事件肯定是在同步事件之后的，但是异步事件之间又是怎么样的一个顺序呢，比如多个 setTimeout 事件又是怎么样一个执行顺序？这就涉及到事件循环：Event Loop。</p>
 <h2 id="js-的单线程">JS 的单线程</h2>
 <p>虽然现在的 JS 可以用来做多方面的开发，但是最初的 JS 是浏览器的专用语言，用来操作 DOM。所以从诞生之初，JS 就被设计成单线程语言，原因是不想让浏览器变得太复杂，因为多线程需要共享资源、且有可能修改彼此的运行结果，对于一种网页脚本语言来说，这就太复杂了。如果 JavaScript 同时有两个线程，一个线程在网页 DOM 节点上添加内容，另一个线程删除了这个节点，这时浏览器应该以哪个线程为准？是不是还要有锁机制？所以，为了避免复杂性，JavaScript 一开始就是单线程，这已经成了这门语言的核心特征，将来也不会改变。</p>
 <p>但是这种单线程机制却制造了另一个麻烦，假如一个操作需花费很长时间，那么此时浏览器就会一直等待这个操作完成，就会造成不好的体验。因此，JS 的另一个事件就是异步事件。异步事件是专门将一些事件以队列的形式储存到浏览器的任务队列中，等同步事件执行完后再去执行，这样就避免了页面堵塞。</p>
@@ -1568,7 +1568,7 @@ Promise、process.nextTick、Object.observe、MutationObserver</li>
   
   
 >解决 canvas 在高清屏中绘制模糊的问题</a></p>
-]]></description></item><item><title>建一个本地mongdb数据库</title><link>https://real-jacket.github.io/posts/%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%9C%AC%E5%9C%B0mongdb%E6%95%B0%E6%8D%AE%E5%BA%93/</link><pubDate>Wed, 09 Jan 2019 11:55:02 +0000</pubDate><author>xiaomu</author><guid>https://real-jacket.github.io/posts/%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%9C%AC%E5%9C%B0mongdb%E6%95%B0%E6%8D%AE%E5%BA%93/</guid><description><![CDATA[<h2 id="安装-mongodb-数据库">安装 mongodb 数据库</h2>
+]]></description></item><item><title>建一个本地mongdb数据库</title><link>https://real-jacket.github.io/posts/%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%9C%AC%E5%9C%B0mongdb%E6%95%B0%E6%8D%AE%E5%BA%93/</link><pubDate>Wed, 09 Jan 2019 11:55:02 +0800</pubDate><author>xiaomu</author><guid>https://real-jacket.github.io/posts/%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%9C%AC%E5%9C%B0mongdb%E6%95%B0%E6%8D%AE%E5%BA%93/</guid><description><![CDATA[<h2 id="安装-mongodb-数据库">安装 mongodb 数据库</h2>
 <h3 id="安装包安装">安装包安装</h3>
 <p>进入<a
   href="https://www.mongodb.com/cn"
@@ -1794,7 +1794,7 @@ Promise、process.nextTick、Object.observe、MutationObserver</li>
 ```
 
 ``` -->
-]]></description></item><item><title>hexo 博客转移</title><link>https://real-jacket.github.io/posts/hexo-%E5%8D%9A%E5%AE%A2%E8%BD%AC%E7%A7%BB/</link><pubDate>Wed, 02 Jan 2019 10:11:24 +0000</pubDate><author>xiaomu</author><guid>https://real-jacket.github.io/posts/hexo-%E5%8D%9A%E5%AE%A2%E8%BD%AC%E7%A7%BB/</guid><description><![CDATA[<p>最近觉得 window 下的命令行实在难看，即使是 gitbash 也无法拯救，毕竟一些乱码着实是要逼死我这种强迫症。于是下定决心，将笔记本里的另一个 linux 系统 deepin 作为主力系统，开始各方面的迁移。代码啥的都好说，毕竟有 github 托管，但是 hexo 博客就让人头疼了，对于我这个刚入行不久的小白，实在是不知道从何处下手。</p>
+]]></description></item><item><title>hexo 博客转移</title><link>https://real-jacket.github.io/posts/hexo-%E5%8D%9A%E5%AE%A2%E8%BD%AC%E7%A7%BB/</link><pubDate>Wed, 02 Jan 2019 10:11:24 +0800</pubDate><author>xiaomu</author><guid>https://real-jacket.github.io/posts/hexo-%E5%8D%9A%E5%AE%A2%E8%BD%AC%E7%A7%BB/</guid><description><![CDATA[<p>最近觉得 window 下的命令行实在难看，即使是 gitbash 也无法拯救，毕竟一些乱码着实是要逼死我这种强迫症。于是下定决心，将笔记本里的另一个 linux 系统 deepin 作为主力系统，开始各方面的迁移。代码啥的都好说，毕竟有 github 托管，但是 hexo 博客就让人头疼了，对于我这个刚入行不久的小白，实在是不知道从何处下手。</p>
 <h2 id="最蠢的办法">最蠢的办法</h2>
 <p>估计这个办法是只有我这种蠢人与懒人才能想出来吧，直接把 windows 下的 hexo 博客相关文件复制一份放到 deepin 下跑起来。跑之前，我猜测可能环境配置肯定会出问题，出人意料之外的，竟然成功跑起来了，没有出问题。毕竟从 windows 到 linux，个人觉得主要还是环境配置问题吧,比如 node 版本，一些环境依赖，比如 python 版本号</p>
 <!-- more -->
@@ -2021,7 +2021,7 @@ Promise、process.nextTick、Object.observe、MutationObserver</li>
 </span></span><span class="line"><span class="cl">sudo apt-get install libtiff5-dev libtiff5 libjbig-dev
 </span></span></code></pre></td></tr></table>
 </div>
-</div>]]></description></item><item><title>vscode 快捷操作</title><link>https://real-jacket.github.io/posts/vscode-%E5%BF%AB%E6%8D%B7%E6%93%8D%E4%BD%9C/</link><pubDate>Tue, 18 Dec 2018 21:21:46 +0000</pubDate><author>xiaomu</author><guid>https://real-jacket.github.io/posts/vscode-%E5%BF%AB%E6%8D%B7%E6%93%8D%E4%BD%9C/</guid><description><![CDATA[<h2 id="命令行使用-vs-code">命令行使用 vs code</h2>
+</div>]]></description></item><item><title>vscode 快捷操作</title><link>https://real-jacket.github.io/posts/vscode-%E5%BF%AB%E6%8D%B7%E6%93%8D%E4%BD%9C/</link><pubDate>Tue, 18 Dec 2018 21:21:46 +0800</pubDate><author>xiaomu</author><guid>https://real-jacket.github.io/posts/vscode-%E5%BF%AB%E6%8D%B7%E6%93%8D%E4%BD%9C/</guid><description><![CDATA[<h2 id="命令行使用-vs-code">命令行使用 vs code</h2>
 <p>命令查找：<code>Ctrl + Shift + P</code>/<code>Cmd + Shift + P</code></p>
 <p><code>code + &lt;filename&gt;/&lt;filepath&gt;</code> 打开文件或者文件目录</p>
 <table>
