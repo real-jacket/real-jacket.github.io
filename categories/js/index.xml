@@ -1,0 +1,1155 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>JS - 分类 - Xiaomu</title><link>https://blog.realjacket.site/categories/js/</link><description>JS - 分类 - Xiaomu</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor><webMaster>1762982273@qq.com (xiaomu)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 08 Sep 2020 14:20:41 +0800</lastBuildDate><atom:link href="https://blog.realjacket.site/categories/js/" rel="self" type="application/rss+xml"/><item><title>Event Loop事件循环，GET！</title><link>https://blog.realjacket.site/posts/event-loop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AFget/</link><pubDate>Mon, 29 Oct 2018 21:14:06 +0800</pubDate><author>xiaomu</author><guid>https://blog.realjacket.site/posts/event-loop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AFget/</guid><description><![CDATA[<p>JS 中比较让人头疼的问题之一要算异步事件了，比如我们经常要等后台返回数据后进行 dom 操作，又比如我们要设置一个定时器完成特定的要求。在这些同步与异步事件里，异步事件肯定是在同步事件之后的，但是异步事件之间又是怎么样的一个顺序呢，比如多个 setTimeout 事件又是怎么样一个执行顺序？这就涉及到事件循环：Event Loop。</p>
+<h2 id="js-的单线程">JS 的单线程</h2>
+<p>虽然现在的 JS 可以用来做多方面的开发，但是最初的 JS 是浏览器的专用语言，用来操作 DOM。所以从诞生之初，JS 就被设计成单线程语言，原因是不想让浏览器变得太复杂，因为多线程需要共享资源、且有可能修改彼此的运行结果，对于一种网页脚本语言来说，这就太复杂了。如果 JavaScript 同时有两个线程，一个线程在网页 DOM 节点上添加内容，另一个线程删除了这个节点，这时浏览器应该以哪个线程为准？是不是还要有锁机制？所以，为了避免复杂性，JavaScript 一开始就是单线程，这已经成了这门语言的核心特征，将来也不会改变。</p>
+<p>但是这种单线程机制却制造了另一个麻烦，假如一个操作需花费很长时间，那么此时浏览器就会一直等待这个操作完成，就会造成不好的体验。因此，JS 的另一个事件就是异步事件。异步事件是专门将一些事件以队列的形式储存到浏览器的任务队列中，等同步事件执行完后再去执行，这样就避免了页面堵塞。</p>
+<p>JavaScript 引擎怎么知道异步任务有没有结果，能不能进入主线程呢？答案就是引擎在不停地检查，一遍又一遍，只要同步任务执行完了，引擎就会去检查那些挂起来的异步任务，是不是可以进入主线程了。这种循环检查的机制，就叫做事件循环（Event Loop）。</p>
+<h2 id="浏览器的事件循环">浏览器的事件循环</h2>
+<p><figure><a class="lightgallery" href="/posts/event-loop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AFget/loop.png" title="浏览器事件循环" data-thumbnail="/posts/event-loop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AFget/loop.png" data-sub-html="<h2>执行过程中栈的变化</h2><p>浏览器事件循环</p>">
+    
+  </a><figcaption class="image-caption">执行过程中栈的变化</figcaption>
+  </figure></p>
+<p>如上图所示，js 中的基本数据与对象都会储存在栈内存中，其中复杂类型数据对象会在堆内存储存其数据结构，栈内存储存的是对这个数据结构的引用。</p>
+<h3 id="执行栈">执行栈</h3>
+<p>javaScript 是单线程，也就是说只有一个主线程，主线程有一个栈。当 JS 代码执行时，代码会被推入执行栈中进行运行，运行代码的过程中，同步事件会立即执行，其中 Dom、Ajax 以及 SetTimeout 等异步事件会注册回调函数，放入事件回调队列中，等同步代码执行完之后执行。这样一个循环便是浏览器的 Event Loop。</p>
+<p><figure><a class="lightgallery" href="/posts/event-loop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AFget/stack.jpg" title="执行过程中栈的变化" data-thumbnail="/posts/event-loop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AFget/stack.jpg" data-sub-html="<h2>执行过程中栈的变化</h2><p>执行过程中栈的变化</p>">
+    
+  </a><figcaption class="image-caption">执行过程中栈的变化</figcaption>
+  </figure></p>
+<h3 id="异步过程">异步过程</h3>
+<p>但是在回调队列中这些事件又是怎么样一个执行顺序呢？实际上异步队列存在两个队列，一个宏任务队列，一个微任务队列，其这就涉及到两个概念:</p>
+<ul>
+<li>宏任务(MacroTask):
+包括整体代码 script，setTimeout、setInterval、setImmediate、I/O、UI 渲染</li>
+<li>微任务(MicroTask)：
+Promise、process.nextTick、Object.observe、MutationObserver</li>
+</ul>
+<p>在栈内存中代码执行完后，浏览器空闲，立即处理回调队列，将回调队列中的宏任务队列中的事件推入执行栈中执行。</p>
+<ul>
+<li>首先会执行宏任务，如果宏任务中存在宏任务，则会把该任务放到宏任务队列中。如果该任务里存在微任务，则把微任务放在微任务队列。</li>
+<li>在这个宏任务执行完后，首先去看微任务队列中是否有任务，然后把微任务推到执行栈中执行。</li>
+</ul>
+<p>执行完微任务队列，这一次循环就结束了，然后再进行在宏任务队列中进行下一个宏任务，微任务，直至回调队列清空。</p>
+<p>上述事件归纳后，以下例说明：
+<figure><a class="lightgallery" href="/posts/event-loop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AFget/code.png" title="代码示例" data-thumbnail="/posts/event-loop%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AFget/code.png" data-sub-html="<h2>代码示例</h2><p>代码示例</p>">
+    
+  </a><figcaption class="image-caption">代码示例</figcaption>
+  </figure></p>
+<p>分析：</p>
+<p>循环 1：</p>
+<ul>
+<li>【task 队列：script ；microtask 队列：】 1.首先整个代码被推到执行栈中执行，这是一个宏任务（整个 script 代码） 2.运行中，同步代码立即执行，new Promise 中的 fn 是立即执行的。setTimeout 被放在宏任务队列中，promise1、promise2 被放在微任务队列中。</li>
+<li>【task 队列：setTimeout ；microtask 队列：promise1、promise2】 3.宏任务 script 执行完后，执行微任务队列，取出 microtask 队列，推入执行栈执行，第一次循环到此结束。</li>
+</ul>
+<p>循环 2：</p>
+<ul>
+<li>【task 队列：setTimeout ；microtask 队列：】 4.取出宏任务中的 setTimeout 推入执行栈执行，如果有微任务则，则被放在微任务队列（这里没有）。 5.宏任务执行完，去微任务队列执行（微任务队列为空）。</li>
+<li>【task 队列：；microtask 队列：】 6.宏任务队列为空，循环至此结束。</li>
+</ul>
+<h2 id="nodejs-事件循环">Nodejs 事件循环</h2>
+<p>nodejs 中的事件循环跟浏览器不一样，浏览器的循环是遵循 ES 标准里的，nodejs 里的循环是通过 LIBUV 库实现的。</p>
+<p>当 Node.js 启动时，会做这几件事</p>
+<ul>
+<li>初始化 event loop</li>
+<li>开始执行脚本（或者进入 REPL，本文不涉及 REPL）。这些脚本有可能会调用一些异步 API、设定计时器或者调用 process.nextTick()</li>
+<li>开始处理 event loop</li>
+</ul>
+<p>nodejs 的 Event Loop 一共有 6 个阶段：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">   ┌───────────────────────┐
+</span></span><span class="line"><span class="cl">┌─&gt;│        timers         │
+</span></span><span class="line"><span class="cl">│  └──────────┬────────────┘
+</span></span><span class="line"><span class="cl">│  ┌──────────┴────────────┐
+</span></span><span class="line"><span class="cl">│  │     I/O callbacks     │
+</span></span><span class="line"><span class="cl">│  └──────────┬────────────┘
+</span></span><span class="line"><span class="cl">│  ┌──────────┴────────────┐
+</span></span><span class="line"><span class="cl">│  │     idle, prepare     │
+</span></span><span class="line"><span class="cl">│  └──────────┬────────────┘      ┌───────────────┐
+</span></span><span class="line"><span class="cl">│  ┌──────────┴────────────┐      │   incoming:   │
+</span></span><span class="line"><span class="cl">│  │         poll          │&lt;─────┤  connections, │
+</span></span><span class="line"><span class="cl">│  └──────────┬────────────┘      │   data, etc.  │
+</span></span><span class="line"><span class="cl">│  ┌──────────┴────────────┐      └───────────────┘
+</span></span><span class="line"><span class="cl">│  │        check          │
+</span></span><span class="line"><span class="cl">│  └──────────┬────────────┘
+</span></span><span class="line"><span class="cl">│  ┌──────────┴────────────┐
+</span></span><span class="line"><span class="cl">└──┤    close callbacks    │
+</span></span><span class="line"><span class="cl">   └───────────────────────┘
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>其中我们主要需要关注的是 timers、poll、check 阶段：</p>
+<ul>
+<li>timers 阶段：这个阶段执行 setTimeout 和 setInterval 的回调函数。</li>
+<li>I/O callbacks 阶段：不在 timers 阶段、close callbacks 阶段和 check 阶段这三个阶段执行的回调，都由此阶段负责，这几乎包含了所有回调函数。</li>
+<li>idle, prepare 阶段（译注：看起来是两个阶段，不过这不重要）：event loop 内部使用的阶段（译注：我们不用关心这个阶段）</li>
+<li>poll 阶段：获取新的 I/O 事件。在某些场景下 Node.js 会阻塞在这个阶段。</li>
+<li>check 阶段：执行 setImmediate() 的回调函数。</li>
+<li>close callbacks 阶段：执行关闭事件的回调函数，如 socket.on(&lsquo;close&rsquo;, fn) 里的 fn。</li>
+</ul>
+<h3 id="timers-阶段">timers 阶段</h3>
+<p>计时器实际上是在指定多久以后可以执行某个回调函数，而不是指定某个函数的确切执行时间。当指定的时间达到后，计时器的回调函数会尽早被执行。如果操作系统很忙，或者 Node.js 正在执行一个耗时的函数，那么计时器的回调函数就会被推迟执行。</p>
+<h3 id="poll-阶段轮询阶段">poll 阶段（轮询阶段）</h3>
+<p>poll 阶段有两个功能：</p>
+<ol>
+<li>如果发现计时器的时间到了，就绕回到 timers 阶段执行计时器的回调。</li>
+<li>然后再，执行 poll 队列里的回调。</li>
+</ol>
+<p>当 event loop 进入 poll 阶段，如果发现没有计时器，就会：</p>
+<ul>
+<li>如果 poll 队列不是空的，event loop 就会依次执行队列里的回调函数，直到队列被清空或者到达 poll 阶段的时间上限。</li>
+<li>如果 poll 队列是空的，就会：
+<ol>
+<li>如果有 setImmediate() 任务，event loop 就结束 poll 阶段去往 check 阶段。</li>
+<li>如果没有 setImmediate() 任务，event loop 就会等待新的回调函数进入 poll 队列，并立即执行它。</li>
+</ol>
+</li>
+</ul>
+<p>一旦 poll 队列为空，event loop 就会检查计时器有没有到期，如果有计时器到期了，event loop 就会回到 timers 阶段执行计时器的回调。</p>
+<h3 id="check-阶段">check 阶段</h3>
+<p>这个阶段允许开发者在 poll 阶段结束后立即执行一些函数。如果 poll 阶段空闲了，同时存在 setImmediate() 任务，event loop 就会进入 check 阶段，执行 setImmediate() 回调。</p>
+<h3 id="event-loop-大体流程">Event Loop 大体流程</h3>
+<p>每一个阶段都有一个队列，我们只关注 timers、poll、check 阶段来分析一下，我们在用命令行运行 node server.js 命令时，发生了什么：</p>
+<ol>
+<li>Node.js 启动，初始化 Event Loop</li>
+<li>运行 server.js 脚本内容</li>
+<li>开始运行 Event Loop</li>
+<li>timers 阶段看脚本里是否设置定时器 setTimeout，比如一个 4ms 延迟与一个 100ms 延迟的定时器，把它放到 timers 队列中，进入下一步，I/O callbacks 阶段，idle, prepare 阶段，这两个阶段都不会停留。</li>
+<li>进入 poll（轮询）阶段，首先它会查看定时器时间是否到了，比如 4ms 到了，他就进入下一阶段 check 阶段、close callbacks 阶段，然后回到 timers 阶段执行设置的 4ms 回调函数，接着继续第 4 步到第 5 步。4ms 没到，则停留在这一阶段，处理 poll 队列里的任务，直到 4ms 到、100ms 到，然后循环回到 timers 阶段执行回调。</li>
+</ol>
+<blockquote>
+<p>这里有一个问题：当 poll 阶段在处理任务 1 时，比如这个任务 1 要花费 100ms，在这 100ms 期间，setTimeout 定时器到了，则&gt; 它的回调会等 poll 处理玩任务 1 后立即循环进入 timers 阶段执行</p>
+</blockquote>
+<ol start="6">
+<li>从 poll 阶段进入 check 阶段时，主要是看是否有 setImmediate() 任务，如果有则立即执行，然后再进入 close callbacks 阶段，进行循环，进入 timers 阶段。</li>
+</ol>
+<h3 id="setimmediate-vs-settimeout">setImmediate() vs setTimeout()</h3>
+<p>setImmediate 和 setTimeout 很相似，但是其回调函数的调用时机却不一样。</p>
+<p>setImmediate() 的作用是在当前 poll 阶段结束后调用一个函数。 setTimeout() 的作用是在一段时间后调用一个函数。一般来说 setImmediate 会先于 setTimeout 执行，但是第一次启动的时候不一样，这两者的回调的执行顺序取决于 setTimeout 和 setImmediate 被调用时的环境。
+例如:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">setTimeout</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;setTimeout&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">},</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">setImmediate</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;setImmediate&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>为什么会发生这种情况呢？因为我们启动 node.js 时, node 会做三件事, 初始化 event loop，运行脚本,开始 event loop。运行脚本与开始 event loop 这两件事不是同时执行的，它两中间间隔多少并不清楚，这跟环境性能有关。然后要注意的一点，setTimeout 的延迟时间最小为 4ms，所以这里的 0 相当于 4。</p>
+<ul>
+<li>可能两者间隔 5ms，当进入 timers 阶段的时候，node 发现，4ms 已经过了，立即执行 setTimeout 定时器回调，然后执行 setImmediate。</li>
+<li>也可能两者间隔 3ms，当进入 timers 阶段的时候，node 发现，4ms 还没过，就进入下一阶段，一直到 checked，执行 setImmediate，然后等到 4ms 时再执行 setTimeout。</li>
+</ul>
+<h3 id="processnexttick">process.nextTick()</h3>
+<p>从技术上来讲 process.nextTick() 并不是 event loop 的一部分。实际上，event loop 再次进入循环前，会去先执行 process.nextTick()。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">setTimeout</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;setTimeout&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">},</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">setImmediate</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;setImmediate&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;nextTick&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>上述代码中 nextTick 先于其它两个执行，Vue 中有<code>Vue.nextTick()</code>方法就是类似的思想。</p>
+<p>注：
+本篇文章参考：</p>
+<ul>
+<li><a
+  href="https://juejin.im/post/5ab7677f6fb9a028d56711d0#heading-9"
+  
+  
+    
+    target="_blank"
+  
+  
+    rel="external nofollow noopener noreffer"
+  
+  
+  
+  
+>Event Loop、计时器、nextTick</a></li>
+<li><a
+  href="https://juejin.im/post/59e85eebf265da430d571f89#heading-2"
+  
+  
+    
+    target="_blank"
+  
+  
+    rel="external nofollow noopener noreffer"
+  
+  
+  
+  
+>这一次，彻底弄懂 JavaScript 执行机制</a></li>
+<li><a
+  href="https://github.com/aooy/blog/issues/5"
+  
+  
+    
+    target="_blank"
+  
+  
+    rel="external nofollow noopener noreffer"
+  
+  
+  
+  
+>从 event loop 规范探究 javaScript 异步及浏览器更新渲染时机</a></li>
+</ul>
+]]></description></item><item><title>关于斐波那契数列</title><link>https://blog.realjacket.site/posts/%E5%85%B3%E4%BA%8E%E6%96%90%E6%B3%A2%E9%82%A3%E5%A5%91%E6%95%B0%E5%88%97/</link><pubDate>Tue, 08 Sep 2020 14:20:41 +0800</pubDate><author>xiaomu</author><guid>https://blog.realjacket.site/posts/%E5%85%B3%E4%BA%8E%E6%96%90%E6%B3%A2%E9%82%A3%E5%A5%91%E6%95%B0%E5%88%97/</guid><description><![CDATA[<h1 id="关于斐波那契数列">关于斐波那契数列</h1>
+<h2 id="斐波那契数列-js-实现">斐波那契数列 JS 实现</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// n 默认为大于零的整数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">function</span> <span class="nx">fib</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">n</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">fib</span><span class="p">(</span><span class="nx">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="nx">fib</span><span class="p">(</span><span class="nx">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>斐波那契数列函数的实现基本是基于 “递归”  的思想。但是递归会涉及到一个比较严重的问题 “性能”！</p>
+<h2 id="性能分析">性能分析</h2>
+<p>性能的主要问题是 “调用栈”，当我们递归调用函数的时候，上一个函数始终在执行栈内，无法弹出，导致调用栈不断增加，直到最后一个函数执行完毕，才会一个个一次回归弹出。</p>
+<h2 id="优化">优化</h2>
+<p>优化的点主要在降低压栈次数或者计算次数。</p>
+<h3 id="尾递归优化">尾递归优化</h3>
+<p>使用迭代代替递归，即尾递归。主要是在每次函数执行的时候弹出执行栈，返回一个新的函数继续后续执行，使得执行栈中始终只有一个函数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">fib</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="nx">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">n</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nx">fib_in</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nx">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">fib_in</span><span class="p">(</span><span class="nx">start</span><span class="p">,</span> <span class="nx">end</span><span class="p">,</span> <span class="nx">pre1</span><span class="p">,</span> <span class="nx">pre2</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">start</span> <span class="o">===</span> <span class="nx">end</span> <span class="o">?</span> <span class="nx">pre1</span> <span class="o">+</span> <span class="nx">pre2</span> <span class="o">:</span> <span class="nx">fib_in</span><span class="p">(</span><span class="nx">start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">end</span><span class="p">,</span> <span class="nx">pre1</span> <span class="o">+</span> <span class="nx">pre2</span><span class="p">,</span> <span class="nx">pre1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="记忆函数">记忆函数</h3>
+<p>把递归改变成循环，对每次计算的结果进行缓存，避免斐波那契递归过程中大量的重复计算</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">fib</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kr">const</span> <span class="nx">arr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">n</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">arr</span><span class="p">[</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">n</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 或者
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">fib</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">let</span> <span class="nx">pre1</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">let</span> <span class="nx">pre2</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">n</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">temp</span> <span class="o">=</span> <span class="nx">pre2</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">pre2</span> <span class="o">=</span> <span class="nx">pre1</span> <span class="o">+</span> <span class="nx">pre2</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">pre1</span> <span class="o">=</span> <span class="nx">temp</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">pre1</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="延伸">延伸</h2>
+<p>我们优化斐波那契函数时，第二种方法是通过缓存结果来避免重复计算。同样的思想在 React 的优化中同样体现，React 的 memo 记忆函数，就是通过缓存相关变量，来避免组件的重复渲染。</p>
+]]></description></item><item><title>关于this的一道面试题</title><link>https://blog.realjacket.site/posts/%E5%85%B3%E4%BA%8Ethis%E7%9A%84%E4%B8%80%E9%81%93%E9%9D%A2%E8%AF%95%E9%A2%98/</link><pubDate>Wed, 02 Sep 2020 12:32:41 +0800</pubDate><author>xiaomu</author><guid>https://blog.realjacket.site/posts/%E5%85%B3%E4%BA%8Ethis%E7%9A%84%E4%B8%80%E9%81%93%E9%9D%A2%E8%AF%95%E9%A2%98/</guid><description><![CDATA[<h1 id="关于-this-的一道面试题">关于 this 的一道面试题</h1>
+<h2 id="问题">问题</h2>
+<p>首先贴代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">length</span> <span class="o">=</span> <span class="mi">10</span>
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">fn</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">length</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">method</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fn</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">]()</span>
+</span></span><span class="line"><span class="cl">	<span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">obj</span><span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="nx">fn</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>请问最后打印出什么？</p>
+<ul>
+<li>第一个 fn()  不确定是什么，一般为 0/undefined。</li>
+<li>第二个 arguments[0]()  为 2，是函数调用的实参个数。</li>
+</ul>
+<h2 id="分析">分析</h2>
+<h3 id="函数的返回值是由什么决定的">函数的返回值是由什么决定的？</h3>
+<ul>
+<li>调用时输入的参数  params</li>
+<li>定义时的环境  env</li>
+</ul>
+<p>那么 Js 函数调用时， <code>obj.method(fn,1)</code>  这个函数调用时，参数只有 fn 跟 1 么？</p>
+<ul>
+<li>隐式参数
+<ol>
+<li>arguments：传入函数所有参数（实参）的集合</li>
+<li>this：执行上下文（就是一个对象），与函数调用相关联的对象，这个就跟定义时的环境有关。</li>
+</ol>
+</li>
+<li>显式参数括号内的参数: fn、1</li>
+</ul>
+<h3 id="明确-this-的传入将-this-显式化">明确 this 的传入，将 this 显式化</h3>
+<p>由于 this  的模糊性，通过 call  转化将 this  显式传入：</p>
+<ul>
+<li>obj.method(fn,1) ===&gt; obj.method.call(obj,fn,1)</li>
+<li>fn() ===&gt; fn.call(undefined) //  这里默认为  this  为全局环境（window/global）</li>
+<li>arguments<a
+  href=""
+  
+  
+  
+  
+  
+  
+>0</a> ===&gt; arguments[0].call(arguments)</li>
+</ul>
+<p>由上面可以看出：三个函数调用，传入的 this 。
+注意： 这里需要注意 fn 作为参数传进来，相当于进行了一次隐式赋值，即 var fn = fn。即函数内部的 fn 等与 外面的 fn。</p>
+<h3 id="关于-let-变量声明">关于  let  变量声明</h3>
+<p>我们知道  var  声明的变量是全局变量，作用域为全局，通常挂在 window  下。let  声明的变量局部变量，mdn 中关于 let  是这么定义：“<strong>let</strong>  语句声明一个块级作用域的本地变量，并且可选的将其初始化为一个值。”但是如果在全局环境下进行 let  声明，这个变量会挂在  window  下么？在  mdn  中关于顶级环境的问题也给出了说明，“At the top level of programs and functions, <strong><code>let</code></strong>, unlike <strong><code>var</code></strong>, does not create a property on the global object.”说明不会挂载在 window  下。</p>
+<h3 id="windowlength-到底是什么">window.length  到底是什么</h3>
+<p>window.length  为当前页面中  ifram  的个数。</p>
+<h2 id="延伸">延伸</h2>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">length</span> <span class="o">=</span> <span class="mi">10</span>
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">fn</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">length</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">length</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">method</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="kd">let</span> <span class="nx">length</span> <span class="o">=</span> <span class="mi">3</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">fn</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">]()</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">length</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">obj</span><span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="nx">fn</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="总结">总结</h2>
+<ol>
+<li>函数调用时的  this  为该函数的执行上下文。</li>
+<li>函数调用默认会隐式的传两个参数，this  与  arguments</li>
+<li>在不清楚  this  时，将  this  显示的传入。</li>
+</ol>
+]]></description></item><item><title>JS之数组</title><link>https://blog.realjacket.site/posts/js%E4%B9%8B%E6%95%B0%E7%BB%84/</link><pubDate>Sat, 15 Sep 2018 10:53:30 +0800</pubDate><author>xiaomu</author><guid>https://blog.realjacket.site/posts/js%E4%B9%8B%E6%95%B0%E7%BB%84/</guid><description><![CDATA[<h2 id="array-定义">Array 定义</h2>
+<p>数组是按次序排列的一组值，每个值都有一个下标，按顺序从零开始。
+数组自带一个属性 length，表示数组的长度即有多少个值，其数值为最后一个值下标+1。
+数组是一种特殊的对象，他的键名是按次序排列的一组整数，而他的键值可以是任意值。
+判断数组方法： Array.isArray()</p>
+<h2 id="创建一个数组">创建一个数组</h2>
+<p>创建数组的方式有两种：</p>
+<ul>
+<li>使用 Array 构造函数
+根据给构造函数传递参数的不同，生成不同的数组
+<ul>
+<li>传递一个数值，创建一个给定数量的数组
+<code>var colors = new Array(3)</code>创建一个包含 3 项的数组</li>
+<li>传递其它类型的参数，创建一个包含该参数的一个数组
+<code>var names = new Array('blue')</code>创建一个包含 blue 字符串的数组</li>
+</ul>
+</li>
+<li>使用数组字面量表示法</li>
+</ul>
+<h2 id="数组的增删查改">数组的增删查改</h2>
+<h3 id="数组的增删">数组的增删</h3>
+<ol>
+<li>length 属性：
+可以通过设置数组的 length 属性，从数组的末尾移除项或向数组中添加新项。</li>
+<li>栈方法：
+模仿栈数据结构的方法，后进先出。
+push 与 pop 方法都改变了原数组，只是返回值不同，push 返回改变后数组的长度 length，而 pop 返回数组移除的最后一项。
+<ul>
+<li><code>push()</code>
+接受任意数量的参数，将它们逐个添加到数组的末尾，并返回修改的的数组的长度（length）</li>
+<li><code>pop()</code>
+从数组末尾移除最后一项，减少数组的 length 值，并返回移除的项</li>
+</ul>
+</li>
+<li>队列方法：
+模仿队列数据结构的方法，先进先出。
+shift 与 push 方法可以实现队列那样的行为
+<ul>
+<li><code>shift()</code>
+移除数组的第一项，减少数组的 length 值，并返回移除的项</li>
+<li><code>unshift()</code>同 shift 相反，与 push 类似
+接受任意数量的参数，将他们逐个添加到数组的开头，并返回数修改后的数组的长度</li>
+</ul>
+</li>
+</ol>
+<h3 id="数组的查改">数组的查改</h3>
+<ol>
+<li>获取数组中元素的位置：返回的是索引
+接受两个参数，要查找的项和表示查找起点位置的索引，第二个参数可选，默认为 0。返回要查找的项在数组中的位置（索引），如果没找到返回-1。
+查找比较每一项时，会使用全等操作符（===）
+<ul>
+<li><code>indexOf()</code>从开头向末尾查找</li>
+<li><code>lastIndexOf()</code>从末尾向开头查找</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">numbers</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span> <span class="c1">// 3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">numbers</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span> <span class="c1">// 7
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">numbers</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span> <span class="c1">// 7
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">numbers</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span> <span class="c1">// 3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">numbers</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span> <span class="c1">// 3
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">numbers</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="c1">// -1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">numbers</span><span class="p">.</span><span class="nx">lastIndexOf</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="c1">// -1
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>数组的拼接：</li>
+</ol>
+<ul>
+<li><code>concat()</code>方法：基于当前数组的所有项创建一个新的数组。
+将传入的值，添加到该数组中，并返回一个新的数组。如果传入的是一个或多个数组，则将传入的数组中的每一项添加到该数组中。如果不是数组，则会被简单的添加到数组的末尾。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">colors2</span> <span class="o">=</span> <span class="nx">colors</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="s1">&#39;yellow&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;blcak&#39;</span><span class="p">,</span> <span class="s1">&#39;grey&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">colors2</span><span class="p">)</span> <span class="c1">// [&#34;red&#34;,&#34;green&#34;,&#34;blue&#34;,&#34;yellow&#34;,&#34;blcak&#34;,&#34;grey&#34;]
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>join()</code>方法：以指定参数作为分隔符，将所有数组成员连接为一个字符串返回。如果不提供参数，默认用逗号分隔。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">a</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span> <span class="c1">// &#39;1 2 3 4&#39;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">a</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; | &#39;</span><span class="p">)</span> <span class="c1">// &#34;1 | 2 | 3 | 4&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">a</span><span class="p">.</span><span class="nx">join</span><span class="p">()</span> <span class="c1">// &#34;1,2,3,4&#34;
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>数组的截取：
+<code>slice()</code>方法：基于当前数组中的一个或多个项创建一个新数组。
+接受 2 个参数，即要返回数的起始位置和结束位置（不包括）。可以省略第二个参数，默认返回从起始位置到末尾的数组。该方法返回的是一个新数组，并不会影响原数组。</li>
+<li>数组的<code>splice()</code>方法
+splice 方法接受三个参数：要删除第一项的位置，删除的项数，要插入的项（可以是多个）。
+最终返回一个包含删除项的数组，如果没有（第二个参数为 0），则返回空数组。
+根据三个参数的不同，可以实现三种功能：
+<ul>
+<li>删除：<code>splice(0,2)</code>删除数组的前两项</li>
+<li>插入：<code>splice(2,0,&quot;red&quot;,&quot;blue&quot;)</code>会从当前数组位置 2 开始插入字符串</li>
+<li>替换：<code>splice(2,1,&quot;red&quot;,&quot;blue&quot;)</code>会删除掉 2 位置的项，然后从位置 2 开始插入字符串</li>
+</ul>
+</li>
+</ol>
+<h2 id="数组的迭代">数组的迭代</h2>
+<p>每一个方法接受两个参数：</p>
+<ul>
+<li>每一项运行的函数：该函数接受三个参数：
+<ul>
+<li>数组的每一项（item）</li>
+<li>该项在数组中的位置（index）（可省略）</li>
+<li>数组对象本身（Array）（可省略）</li>
+</ul>
+</li>
+<li>运行该函数的作用域对象：影响 this 的值。</li>
+</ul>
+<p><code>every()</code>:对数组的每一项运行给定函数，当每一项都返回 true 时，every()返回 true。
+<code>some()</code>:对数组的每一项裕兴给定函数，当其中任一项返回 true，some()返回 true。
+<code>filter()</code>:对数组的每一项运行给定函数，数组中返回 true 的项，组成一个新数组返回。
+<code>map()</code>:对数组的每一项运行给定函数，返回对每一项函数运行的结果(返回的值)组成的新数组。
+<code>forEach()</code>:对数组的每一项运行给定函数，无返回值。</p>
+<blockquote>
+<p>注意：
+前面四中方法都是返回一个新的值，并没有改变原数组，而 forEach 操作了原数组
+forEach 本质与 for in 循环类似，forEach 方法无法中断执行，总是会将所有成员遍历完。如果希望符合某种条件时，就中断遍历，要使用 for 循环。</p>
+</blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">everyN</span> <span class="o">=</span> <span class="nx">numbers</span><span class="p">.</span><span class="nx">every</span><span class="p">((</span><span class="nx">item</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">item</span> <span class="o">&gt;</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="nx">everyN</span> <span class="c1">// true
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">someN</span> <span class="o">=</span> <span class="nx">numbers</span><span class="p">.</span><span class="nx">some</span><span class="p">((</span><span class="nx">item</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">item</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="nx">someN</span> <span class="c1">// true
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">var</span> <span class="nx">filterN</span> <span class="o">=</span> <span class="nx">numbers</span><span class="p">.</span><span class="nx">filter</span><span class="p">((</span><span class="nx">item</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">item</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">filterN</span> <span class="c1">//[2,4,6,8]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">mapN</span> <span class="o">=</span> <span class="nx">numbers</span><span class="p">.</span><span class="nx">map</span><span class="p">((</span><span class="nx">item</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">item</span> <span class="o">*</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="nx">mapN</span> <span class="c1">// [2,4,6,8,10,12,14,16,18]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">forEachN</span> <span class="o">=</span> <span class="nx">numbers</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">item</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">item</span> <span class="o">=</span> <span class="nx">item</span> <span class="o">+</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="数组的归并">数组的归并</h2>
+<p>接受两个参数：</p>
+<ol>
+<li>
+<p>每一项上调用的函数
+这个函数接受 4 个参数：</p>
+<ul>
+<li>前一个值</li>
+<li>当前值</li>
+<li>项的索引</li>
+<li>数组对象</li>
+</ul>
+</li>
+<li>
+<p>作为归并基础的初始值</p>
+</li>
+</ol>
+<p>函数返回的值都会作为初始值传给下一项，即数组的第一项调用函数的返回值会作为数组第二项调用函数的初始值参数。
+迭代(遍历)数组的所有项，返回最终值。</p>
+<ul>
+<li><code>reduce()</code>: 从第一项开始遍历数组</li>
+<li><code>reduceRight()</code>：从最后一项向第一项遍历数组</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">values</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">prev</span><span class="p">,</span> <span class="nx">cur</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">array</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">prev</span> <span class="o">+</span> <span class="nx">cur</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// ((((1+2)+3)+4)+5) == 15
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="数组的排序">数组的排序</h2>
+<ul>
+<li>
+<p>sort()
+sort()方法会先调用数组每一项的 tostring()方法，然后比较得到的字符串，确定如何排序，所以实际排序的是每一项的 unicode 编码顺序。
+改进：接受一个比较函数。
+如果第一个参数应该位于第二个参数前则返回一个负数，如果两个参数相等则返回 0，如果第一个参数应该位于第二个参数之后则返回一个正数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">compare</span><span class="p">(</span><span class="nx">val1</span><span class="p">,</span> <span class="nx">val2</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="nx">val</span> <span class="o">&lt;</span> <span class="nx">val2</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">val1</span> <span class="o">&gt;</span> <span class="nx">val2</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">z</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//上述代码优化
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">function</span> <span class="nx">compare</span><span class="p">(</span><span class="nx">val1</span><span class="p">,</span> <span class="nx">val2</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">val1</span> <span class="o">-</span> <span class="nx">val2</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//从小到大
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">values</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="nx">compare</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">values</span> <span class="c1">// [0,5,7,8,10]
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>reverse()
+reverse()反转数组项的顺序</p>
+</li>
+</ul>
+<h2 id="数组的去重">数组的去重</h2>
+<ul>
+<li>
+<p>计数排序逻辑：（只能正整数）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">removeSame</span><span class="p">(</span><span class="nx">array</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="kd">var</span> <span class="nx">hashTab</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">	<span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">a</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">(</span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="k">in</span> <span class="nx">hashTab</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// 什么也不做
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nx">hashTab</span><span class="p">[</span><span class="nx">a</span><span class="p">[</span><span class="nx">i</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="c1">//hashTab: {4: true, 2: true, 5: true, 6:true, 3: true}
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">return</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">hashTab</span><span class="p">)</span> <span class="c1">// [&#39;4&#39;,&#39;2&#39;,&#39;5&#39;,&#39;6&#39;,&#39;3&#39;]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+]]></description></item><item><title>js中的数据类型转换</title><link>https://blog.realjacket.site/posts/js%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/</link><pubDate>Tue, 24 Jul 2018 17:41:31 +0800</pubDate><author>xiaomu</author><guid>https://blog.realjacket.site/posts/js%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2/</guid><description><![CDATA[<p>js 中有 6 个基本数据类型：number、string、boolean、Symbol、null、undefined 与一个复杂的数据类型 object，object 又可以分为三个子类型：狭义的对象 object、数组 array 与函数 function。这些数据类型之间有些是可以相互转换的，然而转换前我们得知道怎么判断这些数据类型。</p>
+<h2 id="如何判断一个值的数据类型">如何判断一个值的数据类型</h2>
+<p>JavaScript 有三种方法，可以确定一个值到底是什么类型。</p>
+<ul>
+<li><code>typeof</code>运算符</li>
+<li><code>instanceof</code>运算符</li>
+<li><code>Object.prototype.toString</code>方法</li>
+</ul>
+<h4 id="typeof-运算符">typeOf 运算符</h4>
+<p><code>typeOf</code>运算符可以返回一个值的数据类型，数值、字符串、布尔值分别返回<code>number</code>、<code>string</code>、<code>boolean</code>，<code>undefined</code>返回<code>undefined</code>，对象返回<code>obeject</code>，数组<code>[]</code>返回<code>object</code>。</p>
+<blockquote>
+<p>注意：函数则会返回<code>function</code>（虽然函数是个对象），<code>null</code>则会返回<code>object</code>（虽然 null 不是个对象 ，主要是为了兼容以前的代码）。</p>
+</blockquote>
+<h4 id="instanceof-运算符">instanceof 运算符</h4>
+<p>后面补充</p>
+<h4 id="objectprototypetostring-方法">Object.prototype.toString 方法</h4>
+<p>后面补充</p>
+<h2 id="数据类型的转换">数据类型的转换</h2>
+<h3 id="手动转换">手动转换</h3>
+<p>手动转换主要有是三个方法：Number()、String()和 Boolean()三个函数，手动将各类型的值分别转换成数字、字符串和布尔值。</p>
+<h4 id="1number">1.Number()</h4>
+<ol>
+<li>原始类型值</li>
+</ol>
+<ul>
+<li>数值：转换后还是原来的值。</li>
+<li>字符串：如果可以被解析为数值，则转换为相应的数值。否则，返回<code>NaN</code>。
+空字符串会转为 0。</li>
+<li>布尔值：<code>true</code>转成 1，<code>false</code>转成 0。</li>
+<li><code>undefined</code>：转成<code>NaN</code>。</li>
+<li><code>null</code>：转成 0。</li>
+</ul>
+<ol start="2">
+<li>对象</li>
+</ol>
+<ul>
+<li>规则：对于对象，一般返回 NaN，但是如果是包含单个数值的数组则会返回对应的数值。</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nb">Number</span><span class="p">({</span> <span class="nx">a</span><span class="o">:</span> <span class="mi">1</span> <span class="p">})</span> <span class="c1">// NaN
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nb">Number</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span> <span class="c1">// NaN
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nb">Number</span><span class="p">([</span><span class="mi">4</span><span class="p">])</span> <span class="c1">// 4
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>原因解析：涉及到 Number 的转换规则。
+<blockquote>
+<p>1.调用对象自身的 <code>typeOf</code>方法。如果返回原始类型的值，则直接对该值使用<code>Number</code>函数，不再进行后续步骤。 2.如果<code>valueOf</code>方法返回的还是对象，则改为调用对象自身的<code>toString</code>方法。如果<code>toString</code>方法返回原始类型的值，则对该值使用<code>Number</code>函数，不再进行后续步骤。 3.如果<code>toString</code>方法返回的是对象，就报错。</p>
+</blockquote>
+</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">1</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nb">Number</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="c1">// NaN
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="nb">Number</span><span class="p">({})</span> <span class="c1">// NaN
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>parseInt()与 parseFloat()</li>
+</ol>
+<ul>
+<li><code>parseInt</code>方法用于将字符串转为整数。
+1、如果字符串头部有空格，空格会被自动去除。<code>parseInt('123') // 123</code>
+2、如果 parseInt 的参数不是字符串，则会先转为字符串再转换。<code>parseInt(' 81') // 81</code>
+3、如果 parseInt 的参数不是字符串，则会先转为字符串再转换。<code>parseInt(1.23) // 1</code>
+4、字符串转为整数的时候，是一个个字符依次转换，如果遇到不能转为数字的字符，就不再进行下去，返回已经转好的部分。如果第一个便不能转化成数字，则会返回 NaN。<code>parseInt('8a') // 8</code>,<code>parseInt('12.34') // 12</code>，<code>parseInt('abc') // NaN</code>
+5、parseInt 方法还可以接受第二个参数（2 到 36 之间），表示被解析的值的进制，返回该值对应的十进制数，默认为十进制。<code>parseInt('1000', 2) // 8</code>,<code>parseInt('1000') // 1000</code></li>
+<li><code>parseFloat</code>方法用于将一个字符串转为浮点数。
+1、如果字符串符合科学计数法，则会进行相应的转换。
+2、如果字符串包含不能转为浮点数的字符，则不再进行往后转换，返回已经转好的部分。
+<code>parseFloat</code>方法会自动过滤字符串前导的空格。
+3、如果参数不是字符串，或者字符串的第一个字符不能转化为浮点数，则返回 NaN。</li>
+</ul>
+<h4 id="2-string">2. String()</h4>
+<p><code>String</code>方法可以将任意类型的值转化成字符串。</p>
+<ol>
+<li>原始类型的值
+数值、字符串、布尔值、undefined、null：转为相应的字符串。</li>
+<li>对象
+String 方法的参数如果是对象，返回一个类型字符串；如果是数组，返回该数组的字符串形式。
+背后的转换规则与<code>Number</code>方法基本相同,只是互换了 valueOf 方法和 toString 方法的执行顺序。</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nb">String</span><span class="p">({</span> <span class="nx">a</span><span class="o">:</span> <span class="mi">1</span> <span class="p">})</span> <span class="c1">// &#34;[object Object]&#34;
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="3boolean">3.Boolean()</h4>
+<p><code>Boolean</code>函数可以将任意类型的值转为布尔值。<br>转换规则：除了这五个值:<code>undefined、null、-0或0、NaN、''(空字符串)</code>的转换结果为 false，其余的值皆为<code>true</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nb">Boolean</span><span class="p">(</span><span class="kc">undefined</span><span class="p">)</span> <span class="c1">// false
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nb">Boolean</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span> <span class="c1">// false
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nb">Boolean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">// false
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nb">Boolean</span><span class="p">(</span><span class="kc">NaN</span><span class="p">)</span> <span class="c1">// false
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nb">Boolean</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="c1">// false
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nb">Boolean</span><span class="p">({})</span> <span class="c1">// true
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nb">Boolean</span><span class="p">([])</span> <span class="c1">// true
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nb">Boolean</span><span class="p">(</span><span class="k">new</span> <span class="nb">Boolean</span><span class="p">(</span><span class="kc">false</span><span class="p">))</span> <span class="c1">// true
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="自动转换">自动转换</h3>
+<p>三种情况下的自动转换数据：</p>
+<ol>
+<li>不同类型的数据相互运算。</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="mi">123</span> <span class="o">+</span> <span class="s1">&#39;abc&#39;</span> <span class="c1">// &#34;123abc&#34;
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="2">
+<li>对非布尔值类型的数据求布尔值。</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="c1">// &#34;hello&#34;
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="3">
+<li>对非数值类型的值使用一元运算符（即<code>+</code>和<code>-</code>）。</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="p">;</span><span class="o">+</span><span class="p">{</span> <span class="nx">foo</span><span class="o">:</span> <span class="s1">&#39;bar&#39;</span> <span class="p">}</span> <span class="o">+</span> <span class="c1">// NaN
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="s1">&#39;abc&#39;</span> <span class="o">-</span> <span class="c1">// NaN
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="c1">// NaN
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="s1">&#39;1&#39;</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl"><span class="mi">0</span> <span class="o">+</span> <span class="c1">// 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="s1">&#39;1&#39;</span> <span class="o">+</span> <span class="c1">// 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="kc">true</span> <span class="c1">// 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="s1">&#39;&#39;</span> <span class="o">+</span> <span class="kc">null</span> <span class="c1">// &#39;null&#39;
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="自动转换成布尔值">自动转换成布尔值</h4>
+<p>JavaScript 遇到预期为布尔值的地方（比如 if 语句的条件部分），就会将非布尔值的参数自动转换为布尔值。系统内部会自动调用 Boolean 函数。</p>
+<h4 id="自动转换成字符串">自动转换成字符串</h4>
+<p>JavaScript 遇到预期为数值的地方，就会将参数值自动转换为数值。系统内部会自动调用 Number 函数。
+除了加法运算符（+）有可能把运算子转为字符串，其他运算符都会把运算子自动转成数值。</p>
+]]></description></item><item><title>js中的数据类型</title><link>https://blog.realjacket.site/posts/js%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</link><pubDate>Sat, 21 Jul 2018 18:44:57 +0800</pubDate><author>xiaomu</author><guid>https://blog.realjacket.site/posts/js%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</guid><description><![CDATA[<p>JS 中的数据类型一共有 7 种：</p>
+<ul>
+<li>基本类型（简单类型）：数值（number）、字符串（string）、布尔值（boolean）、Symbol（ES6 种新增的一种）、null、undefined。</li>
+<li>复杂类型（由简单类型组成）：对象（object）。</li>
+</ul>
+<h2 id="数值number">数值（number）</h2>
+<ol>
+<li>
+<p>整数与浮点数：JavaScript 内部，所有数字都是以 64 位浮点数形式储存。</p>
+</li>
+<li>
+<p>数值精度：JavaScript 浮点数的 64 个二进制位，从最左边开始，是这样组成的。</p>
+<ul>
+<li>第 1 位：符号位，<code>0</code>表示正数，<code>1</code>表示负数，决定一个数的正负。</li>
+<li>第 2 位到第 12 位（共 11 位）：指数部分，决定数值的大小。
+JavaScript 能够表示的数值范围为 2 的 1024 次方到 2 的-1023 次方（开区间），超出这个范围的数无法表示。</li>
+<li>第 13 位到第 64 位（共 52 位）：小数部分（即有效数字），决定数值的精度。
+精度最多只能到 53 个二进制位，绝对值小于等于 2 的 53 次方的整数，即-253 到 253，都可以精确表示。</li>
+</ul>
+</li>
+<li>
+<p>数值的表示方法：</p>
+<ul>
+<li>十进制：没有前导 0 的数值。</li>
+<li>八进制：有前缀<code>0o</code>或<code>0O</code>的数值，或者有前导 0、且只用到 0-7 的八个阿拉伯数字的数值。<code>0xff // 255</code></li>
+<li>十六进制：有前缀<code>0x</code>或<code>0X</code>的数值。<code>0o377 // 255</code></li>
+<li>二进制：有前缀<code>0b</code>或<code>0B</code>的数值。<code>0b11 // 3</code></li>
+<li>科学计数法：科学计数法允许字母 e 或 E 的后面，跟着一个整数，表示这个数值的指数部分。<code>123e3 // 12300</code>、<code>123e-3 // 0.123</code></li>
+</ul>
+</li>
+<li>
+<p>NaN:非数字，主要出现在将字符串解析成数字出现错误的场合。<code>5-'x' // NaN</code>
+NaN 不等于任何值，包括它本身。</p>
+</li>
+<li>
+<p>数值相关的方法：</p>
+<ul>
+<li><code>parseInt()</code>将字符串转为整数，接收第二个参数(2~36)，被解析值的进制。</li>
+<li><code>parseFloar()</code>将一个字符串转为浮点数。</li>
+<li><code>isNaN()</code>判断一个值是否为 NaN。</li>
+<li><code>isFinite()</code>返回一个布尔值，判断这只是否为正常的数值。除了<code>Infinity</code>、<code>-Infinity</code>、<code>NaN</code>和<code>undefined</code>这几个值会返回<code>false</code>，<code>isFinite</code>对于其他的数值都会返回<code>true</code>。</li>
+</ul>
+</li>
+</ol>
+<h2 id="字符串string">字符串（string）</h2>
+<p>字符串就是零个或多个排在一起的字符，放在单引号或双引号之中。</p>
+<ol>
+<li>
+<p>多行字符串实现：（字符串默认只能写在一行内。）</p>
+<ul>
+<li>可以在每行末尾使用反斜杠。</li>
+<li>使用运算符<code>+</code></li>
+<li>运用多行注释的变通方法</li>
+<li>ES6 中添加一个方式，键盘 1 旁边的符号包围字符串，默认单行字符串末尾有空格</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="sb">`1234
+</span></span></span><span class="line"><span class="cl"><span class="sb">6789`</span>
+</span></span><span class="line"><span class="cl"><span class="nx">a</span><span class="p">.</span><span class="nx">lenth</span> <span class="o">=</span> <span class="mi">9</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>反斜杠（\）转义符，在某些字符前面表示特殊含义，如<code>\n</code>表示换行。</p>
+</li>
+<li>
+<p>字符串可以被视为字符数组，可以使用数组的方括号运算符，用来返回某个位置的字符（位置编号从 0 开始），但是无法改变字符串。</p>
+</li>
+<li>
+<p><code>length</code>属性返回字符串的长度，也是无法改变的。</p>
+</li>
+<li>
+<p>字符串中存在 unicod 字符时，会自动转为字面进行识别。</p>
+</li>
+</ol>
+<h2 id="布尔值null-与-undefined">布尔值、null 与 undefined</h2>
+<ol>
+<li>布尔值只有“真（true）”与“假（false）”两个状态。
+<ul>
+<li>常用操作符：<code>&amp;&amp;</code>与（两者均为真）;<code>||</code>或（其中一者为真）;<code>！</code>非（相反）;</li>
+<li><code>undefined</code>,<code>null</code>,<code>false</code>,<code>0</code>,<code>NaN</code>,<code>''、</code>&quot;&quot;<code>（空字符串）如果是布尔值会被转为</code>false<code>，其余都会被转为</code>true`.</li>
+<li>空数组（[]）、空对象（{}）对应的布尔值都是<code>true</code>.</li>
+</ul>
+</li>
+<li>null 和 undefined 很相似，都可以表示“没有”
+区别：
+<ul>
+<li>a. 变量没有赋值&mdash;-undefined。<br>b. 有一个对象 object，不想赋值&mdash;-null。<br>    有一个非对象，不想赋值&mdash;-undefined（这两个是推荐用法，惯例）。</li>
+<li><code>null</code>表示“空值”，<code>undefined</code>表示“未定义”。</li>
+</ul>
+</li>
+</ol>
+<h2 id="对象object">对象（object）</h2>
+<p>对象是一组“键名-键值对”（key-value）的集合，是一种无序的复合数据集合，可以理解为哈希表。<code>{'key':'value','key':'value','key':'value',·······}</code></p>
+<ol>
+<li>
+<p>键名与键值：</p>
+<ul>
+<li>键名是数值则会自动转为字符串</li>
+<li>如果键名不符合标识名的条件（比如第一个字符为数字，或者含有空格或运算符），且也不是数字，则必须加上引号，否则会报错。</li>
+<li>对象的每一个键名又称为“属性”（property），它的“键值”可以是任何数据</li>
+</ul>
+</li>
+<li>
+<p>属性的相关操作：</p>
+<ul>
+<li>读取：两种方法：<br> a.点运算符<code>obj.p</code>，数字键不能使用点运算符。<br> b.方括号运算符<code>obj['p']</code>。<br>    方括号内部可以使用表达式。<br>    数字键不加引号会自动转成字符串。</li>
+<li>赋值：<code>obj.foo = 'hello'</code>,<code>obj['foo'] = 'hello'</code>。</li>
+<li>查看：使用<code>Object.keys</code>查看一个对象本身的所有属性。</li>
+<li>删除：使用<code>delete</code>命令即可删除一个属性，<code>delete pbj.p // true</code>,删除成功返回 true。</li>
+<li>属性是否存在： <code>in</code>运算符。<code>'toString' in obj</code>，但是不能识别哪些属性是对象自身的，哪些属性是继承的。利用 hasOwnPorperty 方法判断，是否为自身属性。</li>
+<li>属性遍历：利用<code>for...in</code>循环。
+<ul>
+<li>它遍历的是对象所有可遍历（enumerable）的属性，会跳过不可遍历的属性。</li>
+<li>它不仅遍历对象自身的属性，还遍历继承的属性。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>with 语句：格式如下：
+<code>js with (对象){ 语句; }</code>
+    作用：操作同一个对象的多个属性时，提供一些书写的方便。（少用）</p>
+</li>
+</ol>
+]]></description></item></channel></rss>

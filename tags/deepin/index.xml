@@ -1,0 +1,127 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>deepin - 标签 - Xiaomu</title><link>https://blog.realjacket.site/tags/deepin/</link><description>deepin - 标签 - Xiaomu</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor><webMaster>1762982273@qq.com (xiaomu)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 16 Aug 2018 11:28:26 +0800</lastBuildDate><atom:link href="https://blog.realjacket.site/tags/deepin/" rel="self" type="application/rss+xml"/><item><title>在deepin中安装node与npm</title><link>https://blog.realjacket.site/posts/%E5%9C%A8deepin%E4%B8%AD%E5%AE%89%E8%A3%85node%E4%B8%8Enpm/</link><pubDate>Thu, 16 Aug 2018 11:28:26 +0800</pubDate><author>xiaomu</author><guid>https://blog.realjacket.site/posts/%E5%9C%A8deepin%E4%B8%AD%E5%AE%89%E8%A3%85node%E4%B8%8Enpm/</guid><description><![CDATA[<p>最近装了 deepin15.6，想安装 http-server 服务，结果报错，原来是 npm 版本太老，以下罗列几种 node 安装方式，这几种方式适用 Linux/ubantu/deepin 系统。</p>
+<h2 id="1官方途径通过包管理器方式安装">1、官方途径：通过包管理器方式安装；</h2>
+<p>node8 版本：</p>
+<blockquote>
+<p>curl -sL <a
+  href="https://deb.nodesource.com/setup_8.x"
+  
+  
+    
+    target="_blank"
+  
+  
+    rel="external nofollow noopener noreffer"
+  
+  
+  
+  
+>https://deb.nodesource.com/setup_8.x</a> | sudo -E bash -
+sudo apt-get install -y nodejs</p>
+</blockquote>
+<p>node10 版本：</p>
+<blockquote>
+<p>curl -sL <a
+  href="https://deb.nodesource.com/setup_10.x"
+  
+  
+    
+    target="_blank"
+  
+  
+    rel="external nofollow noopener noreffer"
+  
+  
+  
+  
+>https://deb.nodesource.com/setup_10.x</a> | sudo -E bash -
+sudo apt-get install -y nodejs
+参考<a
+  href="https://nodejs.org/zh-cn/download/package-manager/"
+  
+  
+    
+    target="_blank"
+  
+  
+    rel="external nofollow noopener noreffer"
+  
+  
+  
+  
+>官方教程</a>,但是很奇怪，会报错，猜测 deepin 系统的原因。</p>
+</blockquote>
+<h2 id="2通过源码编译安装">2、通过源码编译安装</h2>
+<p>在<a
+  href="https://nodejs.org/en/download/"
+  
+  
+    
+    target="_blank"
+  
+  
+    rel="external nofollow noopener noreffer"
+  
+  
+  
+  
+>node 官网下载专区</a>找到系统对应的版本，鼠标右键复制下载链接。在终端中输入： 1.下载 node</p>
+<blockquote>
+<p>wget <a
+  href="https://nodejs.org/dist/v8.11.4/node-v8.11.4-linux-x64.tar.xz"
+  
+  
+    
+    target="_blank"
+  
+  
+    rel="external nofollow noopener noreffer"
+  
+  
+  
+  
+>https://nodejs.org/dist/v8.11.4/node-v8.11.4-linux-x64.tar.xz</a></p>
+</blockquote>
+<p>2.解压文件</p>
+<blockquote>
+<p>tar -xvf node-v8.11.4-linux-x64.tar.xz</p>
+</blockquote>
+<p>3.切换并查看 node 所在路径</p>
+<blockquote>
+<p>cd node-v8.11.4-linux-x64/bin
+pwd</p>
+</blockquote>
+<p>4.查看 node 版本</p>
+<blockquote>
+<p>node -v</p>
+</blockquote>
+<p>5.将 node 和 npm 设置为全局(注意路径为第 3 步的路径)</p>
+<blockquote>
+<p>sudo ln /home/ubuntu/node-v8.11.4-linux-x64/bin/node /usr/local/bin/node
+sudo ln /home/ubuntu/node-v8.11.4-linux-x64/bin/npm /usr/local/bin/npm
+pwd</p>
+</blockquote>
+<p>这种方法配置的环境容易出问题，在安装 http-server 时依然报错。</p>
+<h2 id="3使用自带的-apt-安装">3、使用自带的 apt 安装</h2>
+<p>1.安装 node 与 npm</p>
+<blockquote>
+<p>sudo apt install nodejs-legacy
+sudo apt install npm</p>
+</blockquote>
+<p>2.安装管理 nodejs 本身工具，n 模块</p>
+<blockquote>
+<p>sudo npm install -g n</p>
+</blockquote>
+<p>3.升级 node 到制定版本，后面接版本号</p>
+<blockquote>
+<p>sudo n latest //最新版本
+sudo n stable //稳定版本
+sudo n lts //长期支持版本</p>
+</blockquote>
+<p>4.升级 npm 到最新版本</p>
+<blockquote>
+<p>sudo npm install npm@latest -g</p>
+</blockquote>
+<p>此种方法便于管理 node 版本。</p>
+<h2 id="总结">总结</h2>
+<p>经过测试，第三种方法在 deepin 上成功安装，目前没有遇到什么问题，推荐使用此种方法。</p>
+]]></description></item></channel></rss>

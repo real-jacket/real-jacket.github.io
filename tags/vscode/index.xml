@@ -1,0 +1,121 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>vscode - 标签 - Xiaomu</title><link>https://blog.realjacket.site/tags/vscode/</link><description>vscode - 标签 - Xiaomu</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor><webMaster>1762982273@qq.com (xiaomu)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Tue, 18 Dec 2018 21:21:46 +0800</lastBuildDate><atom:link href="https://blog.realjacket.site/tags/vscode/" rel="self" type="application/rss+xml"/><item><title>vscode 快捷操作</title><link>https://blog.realjacket.site/posts/vscode-%E5%BF%AB%E6%8D%B7%E6%93%8D%E4%BD%9C/</link><pubDate>Tue, 18 Dec 2018 21:21:46 +0800</pubDate><author>xiaomu</author><guid>https://blog.realjacket.site/posts/vscode-%E5%BF%AB%E6%8D%B7%E6%93%8D%E4%BD%9C/</guid><description><![CDATA[<h2 id="命令行使用-vs-code">命令行使用 vs code</h2>
+<p>命令查找：<code>Ctrl + Shift + P</code>/<code>Cmd + Shift + P</code></p>
+<p><code>code + &lt;filename&gt;/&lt;filepath&gt;</code> 打开文件或者文件目录</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">参数</th>
+<th style="text-align:center">作用</th>
+<th style="text-align:center">注意项</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">-r</td>
+<td style="text-align:center">在同一窗口打开</td>
+<td style="text-align:center">会删掉原有工作区，只保留一个</td>
+</tr>
+<tr>
+<td style="text-align:center">-g &lt; file:line[character] &gt;</td>
+<td style="text-align:center">打开文件，自动跳转到文件中某个特定的行与列</td>
+<td style="text-align:center">无</td>
+</tr>
+<tr>
+<td style="text-align:center">-d &lt; path1 &gt; &lt; path2 &gt;</td>
+<td style="text-align:center">用来比较两个文件的内容，传入两个文件路径</td>
+<td style="text-align:center">无</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">code -r -g package.json:128 // 表示打开package.json文件，自动跳转到128
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">code -r -d a.txt b.txt // 比较a.txt 与b.txt 文件的内容
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ls <span class="p">|</span> code // 把当前目录下的所有文件名都展示在编辑器里
+</span></span></code></pre></td></tr></table>
+</div>
+</div><!-- more -->
+<h2 id="双手不离键盘">双手不离键盘</h2>
+<h3 id="光标的移动">光标的移动</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">windows</th>
+<th style="text-align:center">mac/linux</th>
+<th style="text-align:center">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Ctrl + 左右方向键</td>
+<td style="text-align:center">Opiton + 左右方向键</td>
+<td style="text-align:center">移动一个单词的距离</td>
+</tr>
+<tr>
+<td style="text-align:center">home/end</td>
+<td style="text-align:center">cmd + 左右方向键</td>
+<td style="text-align:center">移动到行首或行尾</td>
+</tr>
+<tr>
+<td style="text-align:center">Ctrl + M</td>
+<td style="text-align:center">Cmd + shift + \</td>
+<td style="text-align:center">代码块的光标移动（光标在中括号上的跳转）</td>
+</tr>
+<tr>
+<td style="text-align:center">Ctrl + Home/End</td>
+<td style="text-align:center">Cmd + Home/End</td>
+<td style="text-align:center">移动到文档的第一行、最后一行</td>
+</tr>
+</tbody>
+</table>
+<h3 id="文本选择">文本选择</h3>
+<p>基于光标移动的操作基础上 多一个 shift 键就可以在移动的同时选择文本</p>
+<blockquote>
+<p>注意：
+<code>ctrle + 上下方向键</code> 上下移动移动整行</p>
+</blockquote>
+<h3 id="删除操作">删除操作</h3>
+<p>常用操作：选中文本，然后删除！</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">windows</th>
+<th style="text-align:center">mac/linux</th>
+<th style="text-align:center">作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">fn + delete</td>
+<td style="text-align:center">删除该行右侧所有内容</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">Cmd + Delete</td>
+<td style="text-align:center">删除该行左侧所有内容</td>
+</tr>
+<tr>
+<td style="text-align:center">Ctrl + Delete</td>
+<td style="text-align:center">fn + Delete</td>
+<td style="text-align:center">删除字符右侧的内容</td>
+</tr>
+<tr>
+<td style="text-align:center">Ctrl + 删除键</td>
+<td style="text-align:center">fn + 删除键</td>
+<td style="text-align:center">删除字符左侧的内容</td>
+</tr>
+</tbody>
+</table>
+<h2 id="自定义快捷键">自定义快捷键</h2>
+<p>查找 vscode 默认快捷键方式： <code>Ctrl + Shift + P</code>查找键盘快捷方式</p>
+]]></description></item></channel></rss>

@@ -1,0 +1,163 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Web - 分类 - Xiaomu</title><link>https://blog.realjacket.site/categories/web/</link><description>Web - 分类 - Xiaomu</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>1762982273@qq.com (xiaomu)</managingEditor><webMaster>1762982273@qq.com (xiaomu)</webMaster><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sun, 27 Mar 2022 14:51:37 +0800</lastBuildDate><atom:link href="https://blog.realjacket.site/categories/web/" rel="self" type="application/rss+xml"/><item><title>V8 垃圾回收</title><link>https://blog.realjacket.site/posts/v8-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/</link><pubDate>Sun, 27 Mar 2022 14:51:37 +0800</pubDate><author>xiaomu</author><guid>https://blog.realjacket.site/posts/v8-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/</guid><description><![CDATA[<h2 id="什么是垃圾回收">什么是垃圾回收</h2>
+<p>js 中基本类型是储存在栈空间里的，复杂类型是储存在堆空间里，同时栈空间里保存这对它的引用。这是数据的储存方式，如果这些数据被使用过后就不再被需要了，就成了我们常说的垃圾数据，就需要被清理掉。</p>
+<p>当调用栈的函数执行完毕，会被弹出，同时销毁函数的执行上下文，就会导致内存里没用的数据成为垃圾数据，会被js 里的垃圾回收器进行自动回收。</p>
+<h2 id="代际假说">代际假说</h2>
+<p>代际假说有两个特点：</p>
+<ul>
+<li>第一个大部分对象在内存中存在的时间很短，简单来说，就是很多对象一经内存分配。就很快变得不可访问</li>
+<li>第二个是不死的对象，会活的更久</li>
+</ul>
+<p>根据上述两个特性，v8 将堆内存分为两个区域，新生代与老生代：</p>
+<ul>
+<li>新生代：存放生存时间较短的对象，通常支持1～8M大小的容量</li>
+<li>老生代：存放生存时间较长的对象，比较大</li>
+</ul>
+<p>根据上述两个区域，垃圾回收器也就分成里两种，主、副垃圾回收器：</p>
+<ul>
+<li>副垃圾回收器：主要负责新生代垃圾的回收</li>
+<li>主垃圾回收器：主要负责老生代的垃圾回收</li>
+</ul>
+<h2 id="垃圾回收的原理">垃圾回收的原理</h2>
+<h3 id="执行流程">执行流程</h3>
+<ol>
+<li>第一步是标记空间中活动对象何非活动对象。即还在使用的对象，可以进行垃圾回收的对象，即标记垃圾数据。</li>
+<li>回收非活动对象所占据的内存。也就是垃圾清理阶段。</li>
+<li>内存整理。垃圾回收后，内存里会出现大量不连续的小块内存，即内存碎片。不利于内存的利用，当需要大量连续内存比如数组时，就会导致内存不足。故需要在最后一步，对这些内存进行整理。</li>
+</ol>
+<h3 id="副垃圾回收器">副垃圾回收器</h3>
+<p>主要负责新生代的垃圾回收，通常情况大部分小的对象都会被分配到新生区，会经常发生垃圾回收的区域。</p>
+<p>新生代采用 Scavenge 算法进行处理。将新生代分为两个区域，一半为对象区域，一半为空闲区域。</p>
+<p></p>
+<p>新加入的对象都会被放在对象区域，等对象区域快满的时候，就会执行一次垃圾清理操作。</p>
+<ul>
+<li>首先会对对象区域中的垃圾进行标记，标记完成会进入清理垃圾阶段</li>
+<li>副垃圾回收器会将未标记的存活对象复制到空闲区域，同时还会对这些对象进行有序的排列，所以复制的过程同时完成里内存整理，复制后空闲区域就没有内存碎片</li>
+<li>复制完成，对象区域与空闲区域角色翻转。原来的对象区域变成空闲区域，空闲区域变成对象区域，清空空闲区域，就这样完成垃圾回收。</li>
+</ul>
+<p>由于会进行对象的复制操作，所以这块新生代内存不会太大，有错也会造成对象区域很容易被填满。为里解决这种问题， v8 采取里对晋升策略，经过两次垃圾回收依然存活的对象会被移动到老生区。</p>
+<h3 id="主垃圾回收器">主垃圾回收器</h3>
+<p>主垃圾回收器主要负责老生生区的垃圾回收。除老新生区中晋生的对象，一些大的对象会直接被分配到老生区。因此老生区中有两个特点：</p>
+<ul>
+<li>对象占用空间大</li>
+<li>对象存活时间长</li>
+</ul>
+<p>由于老生区对象比较大，就不能采用新生区的 Scavenge 算法进行垃圾回收。主垃圾回收器采用的是 标记 - 清除 的算法进行垃圾回收。</p>
+<ul>
+<li>标记阶段：从一组根元素开始，递归遍历这组元素，在这个遍历的过程中，能达到的元素称为活动对象，没有达到的元素可以判断为垃圾对象</li>
+<li>垃圾清除：对老生区中标记为垃圾的对象进行清理，在清理前首先会让活动对象向一段移动，然后直接清理掉端边界以外的内存。</li>
+</ul>
+<h2 id="全停顿">全停顿</h2>
+<p>由于 js 是单线程的，并且与渲染线程同属一个，所以一旦执行垃圾回收，会暂停 js 脚本，待垃圾回收完毕再回复脚本执行。我们吧这种行为称之为全停顿。</p>
+<p>在新生代中，由于空间较小，全停顿影响不大，但是老生代空间对象很大，就不能使用全停顿了。v8 为了减少这种停顿，将标记阶段分为一个个子标记阶段，标记与js逻辑交替执行，直至标记阶段完成。然后进行清理+整理的过程。</p>
+]]></description></item><item><title>浅谈HTNL常用标签</title><link>https://blog.realjacket.site/posts/%E6%B5%85%E8%B0%88htnl%E5%B8%B8%E7%94%A8%E6%A0%87%E7%AD%BE/</link><pubDate>Thu, 05 Jul 2018 17:39:41 +0800</pubDate><author>xiaomu</author><guid>https://blog.realjacket.site/posts/%E6%B5%85%E8%B0%88htnl%E5%B8%B8%E7%94%A8%E6%A0%87%E7%AD%BE/</guid><description><![CDATA[<h1 id="html-常用标签">HTML 常用标签</h1>
+<p>HTML 常用标签有：a、form、input、button、h1、p、ul、ol、small、strong、div、span、kbd、video、audio、svg 等等。</p>
+<h2 id="组成文档结构的标签">组成文档结构的标签</h2>
+<p>主要用来构成整个文档大概的框架：<code>&lt;head&gt;</code>、<code>&lt;title&gt;</code>、<code>&lt;body&gt;</code>、<code>&lt;h1&gt;</code>、<code>&lt;p&gt;</code>、<code>&lt;ul&gt;</code>、<code>&lt;ol&gt;</code>、<code>&lt;ol&gt;</code>、<code>&lt;li&gt;</code>、<code>&lt;div&gt;</code>、<code>&lt;span&gt;</code>等等。</p>
+<ul>
+<li><code>&lt;head&gt;</code>、<code>&lt;body&gt;</code>标签
+组成整个页面的头和身体，大部分内容放在<code>&lt;body&gt;</code>中，<code>&lt;head&gt;</code>中有一般只有一个标题<code>&lt;title&gt;</code>。</li>
+<li><code>&lt;h1&gt;</code>标题标签，
+一共有 6 个从<code>&lt;h1&gt;</code>~<code>&lt;h6&gt;</code>，对应着 6 级标题，反正够你用了。
+其中<code>&lt;h1&gt;</code>~<code>&lt;h3&gt;</code>对浏览器友好，意思就是这三个标题能够更容易被浏览器搜索到。</li>
+<li><code>&lt;p&gt;</code>段落标签（paragraph）
+用来标识一段段落的。</li>
+<li><code>&lt;div&gt;</code>盒标签（盒模型）
+我们常说的盒模型就指的<code>&lt;div&gt;</code>，主要作用就是把页面划分成一块一块，就像一个盒子般，里面嵌套其它内容。</li>
+<li><code>&lt;span&gt;</code>块标签
+作用类似于<code>&lt;div&gt;</code>，但是<code>&lt;span&gt;</code>是把一行里面的内容分块。</li>
+<li><code>&lt;ul&gt;</code>、<code>&lt;ol&gt;</code>、<code>&lt;li&gt;</code>列表标签
+<code>&lt;ul&gt;</code>或<code>&lt;ol&gt;</code>包含几个<code>&lt;li&gt;</code>组成一个列表。
+<code>&lt;ul&gt;</code>(unordered list)无序列表，展现的列表是无序的，<code>&lt;li&gt;</code>前面一般是一个标志。而<code>&lt;ol&gt;</code>(ordered list)是有序列表，<code>&lt;li&gt;</code>前面会自动排序。</li>
+</ul>
+<h2 id="多媒体嵌入">多媒体嵌入</h2>
+<p>主要用来插入一些多媒体内容：<code>&lt;img&gt;</code>、<code>&lt;video&gt;</code>、<code>&lt;audio&gt;</code>、<code>&lt;ifram&gt;</code>、<code>&lt;svg&gt;</code>。</p>
+<ul>
+<li><code>&lt;img&gt;</code>插入图片
+<ol>
+<li><code>src</code>图片的来源。</li>
+<li><code>alt</code>图片无法正常加载时显示的内容。</li>
+<li><code>title</code>鼠标悬停在图片上显示的内容。</li>
+</ol>
+</li>
+<li><code>&lt;video&gt;</code>插入视屏、<code>&lt;audio&gt;</code>插入音频
+<code>src</code>视屏来源</li>
+<li><code>&lt;ifram&gt;</code>插入网页（少用）</li>
+<li><code>&lt;svg&gt;</code>插入画板</li>
+</ul>
+<h2 id="文本内容修饰的标签">文本内容修饰的标签</h2>
+<p>主要用来修饰文本内容：<code>&lt;a&gt;</code>、<code>&lt;small&gt;</code>、<code>&lt;strong&gt;</code>、<code>&lt;em&gt;</code>等等</p>
+<ul>
+<li><code>&lt;a&gt;</code>（anchor 锚点）超链接标签（使用 GET 方法跳转页面）
+可以创建一个到其他网页、文件、同一页面内的位置、电子邮件地址或任何其他 URL 的超链接。
+_ href 属性：
+如果指向域名则跳转对应的域名(<a
+  href="http://qq.com"
+  
+  
+    
+    target="_blank"
+  
+  
+    rel="external nofollow noopener noreffer"
+  
+  
+  
+  
+>http://qq.com</a>) ，如果指向文件（http 中存在 Content-Type：application）则下载文件。（不支持 file 协议）。 #锚点，页面跳转后不发起请求，跳转到顶部。
+伪协议：后接一段 JavaScript 代码，直接实现代码。<code>javascript: alert('1')</code>弹出对话框 1，<code>javascript: ;</code>点击后什么都不做。
+_ target 属性： 1. &ldquo;_blank&rdquo; 在新页面打开 2. &ldquo;_self&rdquo; 在当前页面打开 3. &ldquo;_parent&rdquo; 当存在<code>&lt;ifram&gt;</code>时会在父页面打开 4. &ldquo;_top&quot;当存在多个<code>&lt;ifram&gt;</code>（≥3）时，会在最外层页面打开 * download 属性：表示 a 标签不再跳转链接，而是强制下载文件，href 是域名则下载网页。</li>
+<li><code>&lt;strong&gt;</code>加粗标签
+表示文本十分重要，一般用粗体显示。不同于<code>&lt;b&gt;</code>标签（同样加粗文本），<code>&lt;strong&gt;</code>强调内容与形式，内容很重要，而<code>&lt;b&gt;</code>强调形式。</li>
+<li><code>&lt;small&gt;</code>缩小标签
+使文本的字体变小一号，一般被定义为表示边注释和附属细则。</li>
+<li><code>&lt;em&gt;</code>斜体标签
+使文本内容变成斜体，标记出需要用户着重阅读的内容。与<code>&lt;strong&gt;</code>类似，<code>&lt;em&gt;</code>也有一个<code>&lt;i&gt;</code>标签表示斜体。同样的，<code>&lt;em&gt;</code>强调内容与形式，内容很重要，而<code>&lt;i&gt;</code>强调形式。</li>
+</ul>
+<h2 id="html-表单">HTML 表单</h2>
+<p>常用来提交内容：<code>&lt;form&gt;</code>、<code>&lt;input&gt;</code>、<code>&lt;button&gt;</code>、<code>&lt;label&gt;</code></p>
+<ul>
+<li><code>&lt;form&gt;</code>主要用来提交内容(使用 POST 方法跳转页面，提交的内容放在请求的第四部分)
+<ol>
+<li>action 属性：发起请求后跳转的页面。</li>
+<li><code>method=&quot;post&quot;</code>（默认为 GET）使用 POST 发起请求。</li>
+<li><code>target</code>同<code>&lt;a&gt;</code>标签</li>
+</ol>
+</li>
+<li><code>&lt;input&gt;</code>标签
+<ol>
+<li><code>type=&quot;submit&quot;</code>：提交按钮（如果<code>&lt;form&gt;</code>没有 submit 则无法提交）
+如果一个只有一个按钮<code>&lt;button&gt;</code>，会自动升级为提交按钮。
+如果该标签明确定义 type=“button”，则不会升级，依然为按钮。</li>
+<li><code>type=&quot;checkbox&quot;</code>多选框<code>&lt;type=“radio”&gt;</code>单选框
+<ol>
+<li>两者均必须使用 value 属性定义此控件被提交时的值，使用 checked 属性指示控件是否被选择。</li>
+<li><code>&lt;label&gt;</code>标签：通常将按钮囊括在里面，点击囊括在内的任何区域都视为被选择。
+<code>&lt;label&gt;&lt;input type=&quot;checkbox&quot;&gt;爱我&lt;/label&gt;</code>当点击爱我时，没有点击按钮，也会被视为被选中了。
+也可以把<code>&lt;label&gt;</code>放在里面将内容囊括起来，利用 for 属性与 id 属性达到同样的效果.
+<code>&lt;input type=&quot;checkbox&quot; id=&quot;xxxx&quot;&gt;&lt;label for=&quot;xxx&quot;&gt;爱我&lt;/label&gt;</code></li>
+</ol>
+</li>
+<li><code>type=&quot;select&quot;</code>下拉菜单选择
+<ol>
+<li><code>&lt;option&gt;</code>标签下拉菜单的选项，<code>select</code>属性表示默认选择，<code>disabled</code>表示不可选中。</li>
+<li><code>mutiple</code>属性表示多选</li>
+</ol>
+</li>
+<li><code>type=&quot;textarea&quot;</code>输入文本框
+<ol>
+<li><code>resize:none</code>文本框默认宽高不固定，该属性表示固定宽高。一般利用 css 固定宽高。</li>
+<li><code>height: 100; width: 200;</code>设定文本框宽高，一般利用 css 固定宽高。</li>
+<li><code>rows:10</code>文本框输入的内容设定的行数。</li>
+</ol>
+</li>
+</ol>
+</li>
+</ul>
+<h2 id="html-表格">HTML 表格</h2>
+<p>常用来表示数据（少用）：<code>&lt;table&gt;</code>标签里只能有以下标签</p>
+<ul>
+<li><code>&lt;thead&gt;</code>表头&gt;<code>&lt;tr&gt;</code>行（table row）&gt;<code>&lt;th&gt;</code>标题单元格</li>
+<li><code>&lt;tbody&gt;</code>表格&gt;<code>&lt;tr&gt;</code>行&gt;<code>&lt;td&gt;</code>单元格（table data）</li>
+<li><code>&lt;tfoot&gt;</code>表注</li>
+</ul>
+]]></description></item></channel></rss>

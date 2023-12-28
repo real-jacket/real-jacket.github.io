@@ -61,4 +61,4 @@ Disallow: /
 User-agent: ZoominfoBot
 Disallow: /
 
-Sitemap: https://real-jacket.github.io/en/sitemap.xml
+Sitemap: https://blog.realjacket.site/en/sitemap.xml
